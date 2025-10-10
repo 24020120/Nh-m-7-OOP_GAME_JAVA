@@ -1,4 +1,21 @@
 package Menu;
 
-public class Return {
+import Game.Main; // SỬA LỖI: Import lớp Main từ package Game
+import javax.swing.*;
+import java.awt.*;
+
+public class Return extends JPanel {
+
+    public Return(Main mainFrame) {
+        setOpaque(false);
+        setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        JButton returnButton = new JButton("Return to Menu");
+        returnButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+        returnButton.addActionListener(e -> mainFrame.switchToPanel("MENU"));
+
+        add(returnButton);
+    }
 }
+
