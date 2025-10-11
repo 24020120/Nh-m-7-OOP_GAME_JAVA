@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-package Menu;
-<<<<<<< HEAD
-
-public class Start {
-=======
-import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
-=======
 /*package Menu;
 >>>>>>> origin
 
@@ -76,5 +67,3 @@ public class Start extends JPanel {
         g2d.drawString(instruction, x, y);
     }
 }*/
-
->>>>>>> origin
