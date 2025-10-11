@@ -66,12 +66,5 @@ public class Menu extends JPanel {
 
     }
 
-    @Override
-    protected void paintComponent(Graphics graphic) {
-        super.paintComponent(graphic);
-        graphic.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-    }
-
-    
 }
 
