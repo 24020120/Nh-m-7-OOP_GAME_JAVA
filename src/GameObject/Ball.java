@@ -12,14 +12,14 @@ public class Ball {
     private int diameter;
     private int screenWidth, screenHeight;
     private BufferedImage ballImage;
-    private panddle paddle;
+    private Paddle paddle;
 
     // Thuộc tính cho di chuyển
     private boolean isMoving = false;
     private double speedX = 0;
     private double speedY = -5; // Di chuyển lên trên khi bắt đầu
 
-    public Ball(int screenWidth, int screenHeight, panddle paddle) {
+    public Ball(int screenWidth, int screenHeight, Paddle paddle) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.paddle = paddle;
@@ -114,4 +114,14 @@ public class Ball {
     public int getDiameter() { return diameter; }
     public int getRadius() { return diameter / 2; }
     public boolean isMoving() { return isMoving; }
+    public double getSpeedX() { return speedX; }
+    public double getSpeedY() { return speedY; }
+
+    public void setSpeedX(double speedX) {
+        this.speedX = speedX;
+    }
+
+    public void setSpeedY(double speedY) {
+        this.speedY = speedY;
+    }
 }

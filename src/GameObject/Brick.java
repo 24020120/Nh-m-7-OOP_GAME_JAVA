@@ -39,6 +39,10 @@ public class Brick {
         }
     }
 
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
+    }
+
     // getter
     public boolean isVisible() { return visible; }
     public void setVisible(boolean visible) { this.visible = visible; }

@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class panddle {
+public class Paddle {
     private int x, y;
     private int width, height;
     private int speed;
@@ -19,7 +19,7 @@ public class panddle {
     private boolean moveLeft = false;
     private boolean moveRight = false;
 
-    public panddle(int screenWidth, int screenHeight) {
+    public Paddle(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
         this.width = 100;
         this.height = 20;
