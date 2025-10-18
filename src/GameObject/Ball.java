@@ -16,6 +16,7 @@ public class Ball {
 
     // Thuộc tính cho di chuyển
     private boolean isMoving = false;
+    private double baseSpeedX = 5;
     private double speedX = 0;
     private double speedY = -5; // Di chuyển lên trên khi bắt đầu
 
@@ -123,5 +124,25 @@ public class Ball {
 
     public void setSpeedY(double speedY) {
         this.speedY = speedY;
+    }
+
+    public double getBaseSpeedX() {
+        return baseSpeedX;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
     }
 }

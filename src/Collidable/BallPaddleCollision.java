@@ -8,12 +8,18 @@ public class BallPaddleCollision {
         Rectangle ballBounds = ball.getBounds();
         Rectangle paddleBounds = paddle.getBounds();
 
-        double overLapTop = ballBounds.y + ballBounds.height - paddleBounds.y;
-        double overLapleft = ballBounds.x + ballBounds.width - paddleBounds.x;
-        double overLapRight = paddleBounds.x + paddleBounds.width - ballBounds.x;
+        if (!ballBounds.intersects(paddleBounds)) return; //check xem co va cham khong
+        
+        double ballCenterX   = ballBounds.x   + ballBounds.width  / 2.0;
+        double paddleCenterX = paddleBounds.x + paddleBounds.width / 2.0;
 
-        if (overLapTop >= 0 && overLapRight >= 0 && overLapleft >= 0) {
-            ball.setSpeedY( - ball.getSpeedY());
-        }
+        double hitPos = (ballCenterX - paddleCenterX) / (paddleBounds.width / 2.0);
+
+        ball.setSpeedY(-Math.abs(ball.getSpeedY()));
+
+        double newSpeedX = hitPos * ball.getBaseSpeedX(); //huong nay cua ball so voi mep paddle
+        ball.setSpeedX(newSpeedX);
+
+        ball.setY(paddleBounds.y - ballBounds.height - 1); //push ball ra khoi padđle
     }
 }

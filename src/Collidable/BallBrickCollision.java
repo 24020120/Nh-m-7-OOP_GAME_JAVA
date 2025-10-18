@@ -9,19 +9,23 @@ public class BallBrickCollision {
         Rectangle brickBounds = brick.getBounds();
         
         if (brick.isVisible() == false) return;
+        if (!ballBounds.intersects(brickBounds)) return; //check va cham
 
         double overLapLeft = ballBounds.x + ballBounds.width - brickBounds.x;
         double overLapRight = brickBounds.x + brickBounds.width - ballBounds.x;
         double overLapTop = ballBounds.y + ballBounds.height - brickBounds.y;
         double overLapBottom = brickBounds.y + brickBounds.height - ballBounds.y;
 
-        double minOverLap = Math.min(Math.min(overLapTop, overLapBottom), Math.min(overLapRight, overLapLeft));
+        double minOverLap = Math.min(
+            Math.min(overLapTop, overLapBottom),
+            Math.min(overLapRight, overLapLeft)
+            );
 
         if (minOverLap == overLapBottom || minOverLap == overLapTop) {
-            ball.setSpeedX( - ball.getSpeedX());
+            ball.setSpeedY( - ball.getSpeedY());
         }
         else if (minOverLap == overLapLeft || minOverLap == overLapRight) {
-            ball.setSpeedY( - ball.getSpeedY());
+            ball.setSpeedX( - ball.getSpeedX());
         }
 
         brick.setVisible(false);

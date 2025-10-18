@@ -46,5 +46,8 @@ public class Brick {
     // getter
     public boolean isVisible() { return visible; }
     public void setVisible(boolean visible) { this.visible = visible; }
+    public int getX() { return x; }
+    public int getY() { return y; }
+
 }
 
