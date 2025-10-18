@@ -1,6 +1,6 @@
 package Menu;
 
-import Game.Main; // SỬA LỖI: Import lớp Main từ package Game
+import Game.Main;
 import javax.swing.*;
 import java.awt.*;
 

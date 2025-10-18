@@ -21,6 +21,9 @@ public class Setting extends JPanel {
 
         JLabel title = new JLabel("Settings will be here");
         title.setFont(new Font("Arial", Font.BOLD, 30));
+
+        title.setForeground(Color.WHITE);
+
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(title);
 

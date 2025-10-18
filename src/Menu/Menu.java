@@ -26,8 +26,10 @@ public class Menu extends JPanel {
 
         add(Box.createRigidArea(new Dimension(0, 50)));
 
+
         JButton playButton = createMenuButton("Start Game");
-        playButton.addActionListener(e -> JOptionPane.showMessageDialog(mainFrame, "Chức năng GameBoard sẽ được thêm ở đây!"));
+        playButton.addActionListener(e -> mainFrame.switchToPanel("GAMEBOARD"));
+       // playButton.addActionListener(e -> JOptionPane.showMessageDialog(mainFrame, "Chức năng GameBoard sẽ được thêm ở đây!"));
 
         JButton instructButton = createMenuButton("Instructions");
         instructButton.addActionListener(e -> mainFrame.switchToPanel("INSTRUCTIONS"));
