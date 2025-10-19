@@ -1,33 +1,26 @@
-/*
 package Collidable;
-import GameObject.*;
-import java.awt.Rectangle;
 
-public class BallBrickCollision {
-    public static void handleBallBrick(Ball ball, Brick brick) {
-        Rectangle ballBounds = ball.getBounds();
-        Rectangle brickBounds = brick.getBounds();
+import GameBoard.GameBoard;
 
-        if (!brick.isVisible()) return;
+public class BallBrickCollision extends Collidable {
+    @Override
+    public void checkCollision(GameBoard board, int prevX, int prevY) {
+        var ball = board.getBall();
 
-        if (ballBounds.intersects(brickBounds)) {
+        for (var brick : board.getBricks()) {
+            if (brick.isVisible() && ball.getBounds().intersects(brick.getBounds())) {
 
-            brick.hit();
+                brick.hit();
+                board.getScore().addScore(10);
+                board.incrementDestroyedBricks();
 
-
-            double dx = ballBounds.getCenterX() - brickBounds.getCenterX();
-            double dy = ballBounds.getCenterY() - brickBounds.getCenterY();
-
-            double minX = (ballBounds.getWidth() + brickBounds.getWidth()) / 2;
-            double minY = (ballBounds.getHeight() + brickBounds.getHeight()) / 2;
-
-            if (Math.abs(dx * minY) > Math.abs(dy * minX)) {
-
-                ball.setSpeedX(-ball.getSpeedX());
-            } else {
-
-                ball.setSpeedY(-ball.getSpeedY());
+                if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
+                    ball.setDx(-ball.getDx());
+                } else {
+                    ball.setDy(-ball.getDy());
+                }
+                break;
             }
         }
     }
-}*/
+}

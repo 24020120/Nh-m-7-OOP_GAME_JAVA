@@ -1,31 +1,28 @@
-/*package Collidable;
+package Collidable;
 
-import GameObject.*;
+import GameBoard.GameBoard;
 
+public class BallScreenCollision extends Collidable {
 
-public class BallScreenCollision {
+    @Override
+    public void checkCollision(GameBoard board, int prevX, int prevY) {
+        var ball = board.getBall();
 
-    public static void handleScreenCollision(Ball ball) {
-        int x = ball.getX();
-        int y = ball.getY();
-        int diameter = ball.getDiameter();
-        int screenWidth = ball.getScreenWidth();
-        int screenHeight = ball.getScreenHeight();
-
-        if (x <= 0) {
-            ball.setSpeedX(Math.abs(ball.getSpeedX()));
+        if (ball.getX() < 0) {
+            ball.setDx(Math.abs(ball.getDx()));
+            ball.setX(0);
+        } else if (ball.getX() > (GameBoard.WIDTH - ball.getWidth())) {
+            ball.setDx(-Math.abs(ball.getDx()));
+            ball.setX(GameBoard.WIDTH - ball.getWidth());
         }
 
-        else if (x + diameter >= screenWidth) {
-            ball.setSpeedX(-Math.abs(ball.getSpeedX()));
+        if (ball.getY() < 0) {
+            ball.setDy(Math.abs(ball.getDy()));
+            ball.setY(0);
         }
 
-        if (y <= 0) {
-            ball.setSpeedY(Math.abs(ball.getSpeedY()));
-        }
-
-        else if (y + diameter >= screenHeight) {
-            ball.reset();
+        if (ball.getY() > GameBoard.HEIGHT - ball.getHeight()) {
+            board.setGameOver(true);
         }
     }
-}*/
+}

@@ -1,6 +1,9 @@
 package GameBoard;
 
 import javax.swing.JPanel;
+
+import Collidable.CollisionManager;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     private Paddle player;
     private Ball ball;
+    private CollisionManager collisionManager;
     private List<Brick> bricks;
     private score score; // Đảm bảo lớp Score đã được triển khai
 
@@ -43,8 +47,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameWin = false;
         destroyedBricksCount = 0;
 
-        player = new Paddle(WIDTH / 2 - 50, HEIGHT - 40, 100, 15);
-        ball = new Ball(WIDTH / 2 - 6, HEIGHT / 2 - 6, 12, 3, -3);
+        player = new Paddle(WIDTH / 2 - 50, HEIGHT - 40, 100, 30);
+        ball = new Ball(WIDTH / 2 - 50, HEIGHT - 40, 12, 3, -3);
+        collisionManager = new CollisionManager();
         score = new score();
         bricks = new ArrayList<>();
 
@@ -110,13 +115,14 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         int prevY = ball.getY();
         ball.update();
 
-        checkCollisions(prevX, prevY);
+        collisionManager.checkAll(this, prevX, prevY);
 
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
         }
     }
 
+    /*
     private void checkCollisions(int prevX, int prevY) {
 
         if (ball.getX() < 0) {
@@ -166,6 +172,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    */
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -179,10 +187,13 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         score.draw(g);
 
         if (gameOver) {
+
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 50));
             g.drawString("GAME OVER", WIDTH / 2 - 140, HEIGHT / 2);
             g.drawString("Press SPACE to restart", WIDTH / 2 - 240, HEIGHT / 2 + 60);
+
+
         }
 
         if (gameWin) {
@@ -216,4 +227,29 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {}
+
+    //Getter
+    public Ball getBall() {
+        return ball;
+    }
+
+    public Paddle getPlayer() {
+        return player;
+    }
+
+    public List<Brick> getBricks() {
+        return bricks;
+    }
+
+    public score getScore() {
+        return score;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public void incrementDestroyedBricks() {
+        destroyedBricksCount++;
+    }
 }
