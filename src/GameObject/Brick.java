@@ -44,3 +44,6 @@ public class Brick {
     public void setVisible(boolean visible) { this.visible = visible; }
 }
 
+import java.awt.Color;
+import java.awt.Graphics;
+

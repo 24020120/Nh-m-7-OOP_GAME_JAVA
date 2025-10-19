@@ -1,7 +1,9 @@
 package Menu;
 
+<<<<<<< HEAD
 
 import Game.Main; // SỬA LỖI: Import lớp Main từ package Game
+import Game.Main;
 import javax.swing.*;
 import java.awt.*;
 
@@ -17,7 +19,6 @@ public class Instruct extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(imageInstruct, 0, 0, getWidth(), getHeight(), this);
-=======
     private Main mainFrame;
     private Image imageInstruct;
 

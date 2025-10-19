@@ -1,6 +1,5 @@
 package Menu;
 
-import GameObject.Brick;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
