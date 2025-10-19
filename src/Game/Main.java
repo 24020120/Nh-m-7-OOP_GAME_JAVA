@@ -5,7 +5,6 @@ import Menu.*;
 import GameBoard.GameBoard;
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 public class Main extends JFrame {
 
     private CardLayout cardLayout;

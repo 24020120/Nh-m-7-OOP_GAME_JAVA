@@ -1,25 +1,22 @@
 package Collidable;
 
-import GameObject.*;
-import java.awt.Rectangle;
+import GameBoard.GameBoard;
 
-public class BallPaddleCollision {
-    public static void handleBallPaddle(Ball ball, Paddle paddle) {
-        Rectangle ballBounds = ball.getBounds();
-        Rectangle paddleBounds = paddle.getBounds();
+public class BallPaddleCollision extends Collidable {
 
-        if (!ballBounds.intersects(paddleBounds)) return; //check xem co va cham khong
-        
-        double ballCenterX   = ballBounds.x   + ballBounds.width  / 2.0;
-        double paddleCenterX = paddleBounds.x + paddleBounds.width / 2.0;
+    @Override
+    public void checkCollision(GameBoard board, int prevX, int prevY) {
+        var ball = board.getBall();
+        var player = board.getPlayer();
 
-        double hitPos = (ballCenterX - paddleCenterX) / (paddleBounds.width / 2.0);
+        if (player.getBounds().intersects(ball.getBounds()) && ball.getDy() > 0) {
+            ball.setDy(-Math.abs(ball.getDy()));
 
-        ball.setSpeedY(-Math.abs(ball.getSpeedY()));
+            double hitPoint = ball.getBounds().getCenterX();
+            double paddleCenter = player.getBounds().getCenterX();
+            double relativeIntersect = (hitPoint - paddleCenter) / (player.getWidth() / 2.0);
 
-        double newSpeedX = hitPos * ball.getBaseSpeedX(); //huong nay cua ball so voi mep paddle
-        ball.setSpeedX(newSpeedX);
-
-        ball.setY(paddleBounds.y - ballBounds.height - 1); //push ball ra khoi padđle
+            ball.setDx(relativeIntersect * 5.0);
+        }
     }
 }

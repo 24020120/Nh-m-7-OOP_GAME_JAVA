@@ -1,33 +1,26 @@
 package Collidable;
 
-import GameObject.*;
-import java.awt.Rectangle;
+import GameBoard.GameBoard;
 
-public class BallBrickCollision {
-    public static void handleBallBrick(Ball ball, Brick brick) {
-        Rectangle ballBounds = ball.getBounds();
-        Rectangle brickBounds = brick.getBounds();
-        
-        if (brick.isVisible() == false) return;
-        if (!ballBounds.intersects(brickBounds)) return; //check va cham
+public class BallBrickCollision extends Collidable {
+    @Override
+    public void checkCollision(GameBoard board, int prevX, int prevY) {
+        var ball = board.getBall();
 
-        double overLapLeft = ballBounds.x + ballBounds.width - brickBounds.x;
-        double overLapRight = brickBounds.x + brickBounds.width - ballBounds.x;
-        double overLapTop = ballBounds.y + ballBounds.height - brickBounds.y;
-        double overLapBottom = brickBounds.y + brickBounds.height - ballBounds.y;
+        for (var brick : board.getBricks()) {
+            if (brick.isVisible() && ball.getBounds().intersects(brick.getBounds())) {
 
-        double minOverLap = Math.min(
-            Math.min(overLapTop, overLapBottom),
-            Math.min(overLapRight, overLapLeft)
-            );
+                brick.hit();
+                board.getScore().addScore(10);
+                board.incrementDestroyedBricks();
 
-        if (minOverLap == overLapBottom || minOverLap == overLapTop) {
-            ball.setSpeedY( - ball.getSpeedY());
+                if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
+                    ball.setDx(-ball.getDx());
+                } else {
+                    ball.setDy(-ball.getDy());
+                }
+                break;
+            }
         }
-        else if (minOverLap == overLapLeft || minOverLap == overLapRight) {
-            ball.setSpeedX( - ball.getSpeedX());
-        }
-
-        brick.setVisible(false);
     }
 }

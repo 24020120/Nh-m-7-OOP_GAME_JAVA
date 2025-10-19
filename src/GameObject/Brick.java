@@ -3,7 +3,7 @@ package GameObject;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Brick extends Gameobject {
+public class Brick extends GameObject {
     private boolean isVisible = true;
 
     public Brick(int x, int y, int width, int height) {

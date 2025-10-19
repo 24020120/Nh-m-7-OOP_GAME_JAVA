@@ -1,11 +1,7 @@
-/*package Collidable;
+package Collidable;
 
-import GameObject.*;
-import java.awt.Rectangle;
+import GameBoard.GameBoard;
 
 public abstract class Collidable {
-    public abstract void handleCollision(GameObject obj1, GameObject obj2);
-
-
+    public abstract void checkCollision(GameBoard board, int prevX, int prevY);
 }
-*/
