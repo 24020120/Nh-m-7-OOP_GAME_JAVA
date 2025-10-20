@@ -41,7 +41,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
-        initGame();
     }
 
     // allow Main to inject the LevelMenu so GameBoard can read selected bricks
@@ -181,6 +180,11 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // If the game hasn't been initialized yet, skip drawing game objects
+        if (player == null || ball == null || bricks == null || score == null) {
+            return;
+        }
+
         player.draw(g);
         ball.draw(g);
         for (Brick brick : bricks) {
@@ -206,7 +210,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!gameOver && !gameWin) {
+        if (!gameOver && !gameWin && player != null) {
             if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                 player.move(-1);
             }
