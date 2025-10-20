@@ -1,18 +1,22 @@
-/*package Collidable;
+package Collidable;
 
-import GameObject.*;
-import java.awt.Rectangle;
+import GameBoard.GameBoard;
 
-public class BallPaddleCollision {
-    public static void handleBallPaddle(Ball ball, Paddle paddle) {
-        Rectangle ballBounds = ball.getBounds();
-        Rectangle paddleBounds = paddle.getBounds();
-        if (ballBounds.intersects(paddleBounds) && ball.getSpeedY() > 0) {
-            ball.setSpeedY( - Math.abs(ball.getSpeedY()));
-            double relativeIntersectX = (ballBounds.getCenterX() - paddleBounds.getCenterX());
-            double normalizedRelativeIntersectionX = relativeIntersectX / (paddleBounds.getWidth() / 2);
-            double bounceAngleFactor = 0.5;
-            ball.setSpeedX(normalizedRelativeIntersectionX * Math.abs(ball.getSpeedY()) * bounceAngleFactor);
+public class BallPaddleCollision extends Collidable {
+
+    @Override
+    public void checkCollision(GameBoard board, int prevX, int prevY) {
+        var ball = board.getBall();
+        var player = board.getPlayer();
+
+        if (player.getBounds().intersects(ball.getBounds()) && ball.getDy() > 0) {
+            ball.setDy(-Math.abs(ball.getDy()));
+
+            double hitPoint = ball.getBounds().getCenterX();
+            double paddleCenter = player.getBounds().getCenterX();
+            double relativeIntersect = (hitPoint - paddleCenter) / (player.getWidth() / 2.0);
+
+            ball.setDx(relativeIntersect * 5.0);
         }
     }
-}*/
+}

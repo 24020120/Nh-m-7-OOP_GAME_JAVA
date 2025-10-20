@@ -3,12 +3,12 @@ package GameObject;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-public abstract class Gameobject {
+public abstract class GameObject {
     protected int x, y;
     protected int width, height;
     protected double dx, dy;
 
-    public Gameobject(int x, int y, int width, int height) {
+    public GameObject(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;

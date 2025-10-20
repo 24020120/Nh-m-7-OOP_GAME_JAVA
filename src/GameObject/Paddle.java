@@ -3,7 +3,7 @@ package GameObject;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Paddle extends Gameobject {
+public class Paddle extends GameObject {
     private final int MOVE_SPEED = 30;
 
     public Paddle(int x, int y, int width, int height) {
