@@ -1,5 +1,4 @@
 /*package Menu;
->>>>>>> origin
 
 import Game.Main; // SỬA LỖI: Import lớp Main từ package Game
 import javax.imageio.ImageIO;
@@ -32,10 +31,6 @@ public class Start extends JPanel {
             }
         });
     }
-<<<<<<< HEAD
->>>>>>> 0cadd486e464599b33d9642f88919932572670c7
-}
-=======
 
     private BufferedImage createDefaultBackground() {
         BufferedImage image = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);
@@ -67,3 +62,4 @@ public class Start extends JPanel {
         g2d.drawString(instruction, x, y);
     }
 }*/
+
