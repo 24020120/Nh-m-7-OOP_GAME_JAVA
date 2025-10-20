@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 import Game.Main;
 import GameObject.*;
+import Menu.LevelMenu;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
@@ -24,6 +25,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private Ball ball;
     private CollisionManager collisionManager;
     private List<Brick> bricks;
+    private LevelMenu levelMenu;
     private score score; // Đảm bảo lớp Score đã được triển khai
 
     private boolean gameOver = false;
@@ -40,6 +42,11 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         setFocusable(true);
         addKeyListener(this);
         initGame();
+    }
+
+    // allow Main to inject the LevelMenu so GameBoard can read selected bricks
+    public void setLevelMenu(LevelMenu levelMenu) {
+        this.levelMenu = levelMenu;
     }
 
     public void initGame() {
@@ -61,26 +68,12 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         ball = new Ball(ballX, ballY, ballDiameter, 3, -3);
         collisionManager = new CollisionManager();
         score = new score();
-        bricks = new ArrayList<>();
-
-        final int BRICK_X = 10;
-        final int BRICK_Y = 6;
-        final int BRICK_WIDTH = 48;
-        final int BRICK_HEIGHT = 20;
-        final int START_Y_OFFSET = 70;
-        final int brickSpacing = 2;
-
-        int totalBrickWidth = BRICK_X * (BRICK_WIDTH + brickSpacing);
-        int startX = (WIDTH - totalBrickWidth) / 2;
-
-        for (int i = 0; i < BRICK_X; i++) {
-            for (int j = 0; j < BRICK_Y; j++) {
-                bricks.add(new Brick(
-                        startX + i * (BRICK_WIDTH + brickSpacing),
-                        START_Y_OFFSET + j * (BRICK_HEIGHT + brickSpacing),
-                        BRICK_WIDTH, BRICK_HEIGHT));
-            }
+        // Prefer level selected from LevelMenu (if provided); otherwise load default level 1
+        int levelToLoad = 1;
+        if (levelMenu != null && levelMenu.getSelectedLevel() > 0) {
+            levelToLoad = levelMenu.getSelectedLevel();
         }
+        bricks = Level.createLevel(levelToLoad, WIDTH);
         totalBricks = bricks.size();
 
         if (gameThread != null) {
