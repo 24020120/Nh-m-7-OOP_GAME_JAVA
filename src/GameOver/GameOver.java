@@ -7,13 +7,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import Game.Main;
 
 public class GameOver extends JPanel{
     private BufferedImage GameOverBG;
     private Exit exitButton;
     private Return returnButton;
+    private Main mainFrame;
 
-    public GameOver() {
+    public GameOver(Main mainFrame) {
+        this.mainFrame = mainFrame;
         setSize(800, 600);
 
         try {
@@ -36,11 +39,18 @@ public class GameOver extends JPanel{
                     System.exit(0);
                 }
                 if (returnButton.isClicked(x, y)) {
-                    // Temporary
-                    System.exit(0);
+                    // If we have a Main frame, switch back to menu. Otherwise ignore.
+                    if (mainFrame != null) {
+                        mainFrame.switchToPanel("MENU");
+                    }
                 }
             }
         });
+    }
+
+    // No-arg constructor for legacy usage
+    public GameOver() {
+        this(null);
     }
 
     @Override

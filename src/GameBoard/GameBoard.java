@@ -47,8 +47,18 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameWin = false;
         destroyedBricksCount = 0;
 
-        player = new Paddle(WIDTH / 2 - 50, HEIGHT - 40, 100, 30);
-        ball = new Ball(WIDTH / 2 - 50, HEIGHT - 40, 12, 3, -3);
+        int paddleWidth = 100;
+        int paddleHeight = 30;
+        int paddleX = WIDTH / 2 - paddleWidth / 2;
+        // Ensure paddle is at least 25 pixels from bottom
+        int paddleY = HEIGHT - paddleHeight - 25;
+        player = new Paddle(paddleX, paddleY, paddleWidth, paddleHeight);
+
+        int ballDiameter = 12;
+        // Place the ball centered on the paddle and just above it
+        int ballX = paddleX + (paddleWidth - ballDiameter) / 2;
+        int ballY = paddleY - ballDiameter - 2; // 2px gap above paddle
+        ball = new Ball(ballX, ballY, ballDiameter, 3, -3);
         collisionManager = new CollisionManager();
         score = new score();
         bricks = new ArrayList<>();
@@ -187,13 +197,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         score.draw(g);
 
         if (gameOver) {
-            
-            g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 50));
-            g.drawString("GAME OVER", WIDTH / 2 - 140, HEIGHT / 2);
-            g.drawString("Press SPACE to restart", WIDTH / 2 - 240, HEIGHT / 2 + 60);
-            
-
+            // When gameOver is true, the board will be reset to the initial state
+            // via setGameOver(true) calling initGame(). Do not switch panels here.
         }
 
         if (gameWin) {
@@ -247,6 +252,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+        if (gameOver && mainFrame != null) {
+            // Switch to the Game Over panel so the player can choose to return to menu or exit
+            mainFrame.switchToPanel("GAMEOVER");
+        }
     }
 
     public void incrementDestroyedBricks() {

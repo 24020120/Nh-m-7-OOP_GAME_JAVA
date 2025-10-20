@@ -3,6 +3,7 @@ package Game;
 import javax.swing.*;
 import Menu.*;
 import GameBoard.GameBoard;
+import GameOver.GameOver;
 import java.awt.CardLayout;
 import java.awt.Component;
 public class Main extends JFrame {
@@ -25,27 +26,40 @@ public class Main extends JFrame {
         Instruct instructPanel = new Instruct(this);
         Setting settingsPanel = new Setting(this);
         Exit exitPanel = new Exit(this);
+        GameOver gameOverPanel = new GameOver(this);
         mainPanel.add(gameBoardPanel, "GAMEBOARD");
         mainPanel.add(menuPanel, "MENU");
         mainPanel.add(instructPanel, "INSTRUCTIONS");
         mainPanel.add(settingsPanel, "SETTINGS");
         mainPanel.add(exitPanel, "EXIT");
+        mainPanel.add(gameOverPanel, "GAMEOVER");
         add(mainPanel);
         switchToPanel("MENU"); // Bắt đầu ở màn hình Menu
     }
     public void switchToPanel(String panelName) {
-        cardLayout.show(mainPanel, panelName);
+        GameBoard gameBoard = null;
+
         if (panelName.equals("GAMEBOARD")) {
-            SwingUtilities.invokeLater(() -> {
-                for (Component comp : mainPanel.getComponents()) {
-                    if ("GAMEBOARD".equals(comp.getName())) {
-                        comp.requestFocusInWindow();
-                        break;
-                    }
+            // Find it once
+            for (Component comp : mainPanel.getComponents()) {
+                if ("GAMEBOARD".equals(comp.getName()) && comp instanceof GameBoard) {
+                    gameBoard = (GameBoard) comp;
+                    break;
                 }
-            });
+            }
+
+            if (gameBoard != null) {
+                gameBoard.initGame();
+            }
+        }
+
+        cardLayout.show(mainPanel, panelName);
+
+        if (gameBoard != null) {
+            SwingUtilities.invokeLater(gameBoard::requestFocusInWindow);
         }
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Main game = new Main();
