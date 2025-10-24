@@ -2,9 +2,21 @@ package GameObject;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 public class Paddle extends GameObject {
-    private final int MOVE_SPEED = 30;
+    private final int MOVE_SPEED = 8;
+    private static BufferedImage paddleImage;
+
+    static {
+        try {
+            paddleImage = ImageIO.read(new File("images/paddle.png"));
+        } catch (Exception e) {
+            paddleImage = null;
+        }
+    }
 
     public Paddle(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -15,9 +27,14 @@ public class Paddle extends GameObject {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.BLUE);
-        g.fillRect(x, y, width, height);
+        if (paddleImage != null) {
+            g.drawImage(paddleImage, x, y, width, height, null);
+        } else {
+            g.setColor(Color.BLUE);
+            g.fillRect(x, y, width, height);
+        }
     }
+
 
     public void move(int direction) { // direction: -1 (trái) hoặc 1 (phải)
         x += direction * MOVE_SPEED;

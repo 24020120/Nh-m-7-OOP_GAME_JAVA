@@ -32,6 +32,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private boolean gameWin = false;
     private int totalBricks = 0;
     private int destroyedBricksCount = 0;
+    private boolean leftPressed = false; // trang thai phím
+    private boolean rightPressed = false;
 
     private Random rand = new Random();
 
@@ -113,6 +115,15 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     }
 
     public void update() {
+
+        if (leftPressed) {
+            player.move(-1);
+        }
+        if (rightPressed) {
+            player.move(1);
+        }
+
+
         int prevX = ball.getX();
         int prevY = ball.getY();
         ball.update();
@@ -212,10 +223,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     public void keyPressed(KeyEvent e) {
         if (!gameOver && !gameWin && player != null) {
             if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-                player.move(-1);
+                leftPressed = true;
             }
             if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-                player.move(1);
+                rightPressed = true;
             }
         }
 
@@ -225,7 +236,14 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+            leftPressed = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+            rightPressed = false;
+        }
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {}
