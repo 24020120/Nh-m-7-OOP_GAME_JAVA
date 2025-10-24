@@ -23,4 +23,5 @@ public class BallBrickCollision extends Collidable {
             }
         }
     }
+
 }

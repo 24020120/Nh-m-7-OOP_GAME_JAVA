@@ -4,6 +4,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import Collidable.CollisionManager;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 import Game.Main;
 import GameObject.*;
+import Menu.LevelMenu;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
@@ -25,14 +27,14 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private CollisionManager collisionManager;
     private List<Brick> bricks;
     private score score;
+    private LevelMenu levelMenu;
 
     private boolean gameOver = false;
     private boolean gameWin = false;
     private int totalBricks = 0;
     private int destroyedBricksCount = 0;
-    private boolean leftPressed = false; // trang thai phím
+    private boolean leftPressed = false;
     private boolean rightPressed = false;
-
 
     private Random rand = new Random();
 
@@ -41,20 +43,24 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
         setFocusable(true);
-        setFocusTraversalKeysEnabled(false); //  tránh mất focus khi nhấn TAB
+        setFocusTraversalKeysEnabled(false);
         addKeyListener(this);
 
         initGame();
 
-        //  Đảm bảo focus sau khi hiển thị panel
+        // Đảm bảo focus sau khi hiển thị panel
         SwingUtilities.invokeLater(() -> requestFocusInWindow());
     }
 
-    //  Đảm bảo luôn có focus khi panel được thêm vào frame
     @Override
     public void addNotify() {
         super.addNotify();
         requestFocusInWindow();
+        addKeyListener(this);
+    }
+
+    public void setLevelMenu(LevelMenu levelMenu) {
+        this.levelMenu = levelMenu;
     }
 
     public void initGame() {
@@ -78,10 +84,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         int totalBrickWidth = BRICK_X * (BRICK_WIDTH + brickSpacing);
         int startX = (WIDTH - totalBrickWidth) / 2;
 
-        // 🔹 Sinh ngẫu nhiên loại gạch xen kẽ
         for (int i = 0; i < BRICK_X; i++) {
             for (int j = 0; j < BRICK_Y; j++) {
-                int typeIndex = (i + j) % 2; // xen kẽ
+                int typeIndex = (i + j) % 2;
                 bricks.add(new Brick(
                         startX + i * (BRICK_WIDTH + brickSpacing),
                         START_Y_OFFSET + j * (BRICK_HEIGHT + brickSpacing),
@@ -90,6 +95,26 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
 
+        int paddleWidth = 100;
+        int paddleHeight = 30;
+        int paddleX = WIDTH / 2 - paddleWidth / 2;
+        int paddleY = HEIGHT - paddleHeight - 25;
+        player = new Paddle(paddleX, paddleY, paddleWidth, paddleHeight);
+
+        int ballDiameter = 12;
+        int ballX = paddleX + (paddleWidth - ballDiameter) / 2;
+        int ballY = paddleY - ballDiameter - 2;
+        ball = new Ball(ballX, ballY, ballDiameter, 3, -3);
+
+        collisionManager = new CollisionManager();
+        score = new score();
+
+        int levelToLoad = 1;
+        if (levelMenu != null && levelMenu.getSelectedLevel() > 0) {
+            levelToLoad = levelMenu.getSelectedLevel();
+        }
+
+        bricks = Level.createLevel(levelToLoad, WIDTH);
         totalBricks = bricks.size();
 
         if (gameThread != null) {
@@ -130,7 +155,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     }
 
     public void update() {
-
         if (leftPressed) {
             player.move(-1);
         }
@@ -152,6 +176,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (player == null || ball == null || bricks == null || score == null) {
+            return;
+        }
 
         player.draw(g);
         ball.draw(g);
@@ -183,9 +211,11 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         if (!gameOver && !gameWin) {
             if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                 leftPressed = true;
+                player.move(-1);
             }
             if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
                 rightPressed = true;
+                player.move(1);
             }
         }
 
@@ -226,6 +256,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+        if (gameOver && mainFrame != null) {
+            mainFrame.switchToPanel("GAMEOVER");
+        }
     }
 
     public void incrementDestroyedBricks() {

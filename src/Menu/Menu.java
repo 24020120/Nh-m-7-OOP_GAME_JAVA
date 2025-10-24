@@ -29,6 +29,7 @@ public class Menu extends JPanel {
 
         JButton playButton = createMenuButton("Start Game");
         playButton.addActionListener(e -> mainFrame.switchToPanel("GAMEBOARD"));
+        playButton.addActionListener(e -> mainFrame.switchToPanel("LEVELMENU"));
        // playButton.addActionListener(e -> JOptionPane.showMessageDialog(mainFrame, "Chức năng GameBoard sẽ được thêm ở đây!"));
 
         JButton instructButton = createMenuButton("Instructions");
@@ -37,7 +38,17 @@ public class Menu extends JPanel {
         JButton settingsButton = createMenuButton("Settings");
         settingsButton.addActionListener(e -> mainFrame.switchToPanel("SETTINGS"));
 
-        JButton exitButton = createMenuButton("Exit");
+        //JButton exitButton = createMenuButton("Exit");
+        //exitButton.addActionListener(e -> mainFrame.switchToPanel("EXIT"));
+
+        IconButton exitButton = new IconButton(
+            "images/exit_icon.png",
+            "images/exit_icon_hover.png",
+            "images/exit_icon_pressed.png"
+            );
+        exitButton.setPreferredSize(new Dimension(250, 50));
+        exitButton.setMaximumSize(new Dimension(250, 50));
+        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(e -> mainFrame.switchToPanel("EXIT"));
 
         add(playButton);

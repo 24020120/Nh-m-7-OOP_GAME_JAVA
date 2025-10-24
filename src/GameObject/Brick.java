@@ -1,38 +1,41 @@
 package GameObject;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;     // cần cho ImageIO.read()
-import java.io.File;             // cần cho new File()
-import java.io.IOException;      // cần cho try-catch
-import java.util.Random;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
-public class Brick extends Gameobject {
+public class Brick extends GameObject {
     private boolean isVisible = true;
     private BufferedImage brickImage;
 
+    // Mảng chứa hình ảnh các loại gạch
     private static BufferedImage[] brickImages;
 
     static {
         try {
-            brickImages = new BufferedImage[] {
+            brickImages = new BufferedImage[]{
                     ImageIO.read(new File("images/brick1.png")),
-                    ImageIO.read(new File("images/brick2.png")),
+                    ImageIO.read(new File("images/brick2.png"))
             };
         } catch (IOException e) {
-            brickImages = new BufferedImage[0]; // fallback
+            brickImages = new BufferedImage[0]; // fallback rỗng
         }
     }
 
     public Brick(int x, int y, int width, int height, int typeIndex) {
         super(x, y, width, height);
-
-        if (brickImages.length > 0)
+        if (brickImages.length > 0) {
             brickImage = brickImages[typeIndex % brickImages.length];
+        }
     }
 
     @Override
-    public void update() {}
+    public void update() {
+        // Gạch không di chuyển
+    }
 
     @Override
     public void draw(Graphics g) {
@@ -41,10 +44,10 @@ public class Brick extends Gameobject {
         if (brickImage != null) {
             g.drawImage(brickImage, x, y, width, height, null);
         } else {
-            g.setColor(java.awt.Color.GREEN);
+            g.setColor(Color.GREEN);
             g.fillRect(x, y, width, height);
-            g.setColor(java.awt.Color.BLACK);
-            g.drawRect(x, y, width + 1, height + 1);
+            g.setColor(Color.BLACK);
+            g.drawRect(x, y, width, height);
         }
     }
 
