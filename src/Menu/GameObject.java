@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public abstract class GameObject {
-
     protected int x, y;
     protected int width, height;
     protected double dx, dy;

@@ -25,11 +25,17 @@ public class Brick extends GameObject {
         }
     }
 
+    //  Giữ constructor có typeIndex (linh hoạt cho nhiều loại gạch)
     public Brick(int x, int y, int width, int height, int typeIndex) {
         super(x, y, width, height);
         if (brickImages.length > 0) {
             brickImage = brickImages[typeIndex % brickImages.length];
         }
+    }
+
+    //  Thêm constructor đơn giản cho backward compatibility
+    public Brick(int x, int y, int width, int height) {
+        this(x, y, width, height, 0);
     }
 
     @Override
@@ -47,7 +53,7 @@ public class Brick extends GameObject {
             g.setColor(Color.GREEN);
             g.fillRect(x, y, width, height);
             g.setColor(Color.BLACK);
-            g.drawRect(x, y, width, height);
+            g.drawRect(x, y, width + 1, height + 1);
         }
     }
 

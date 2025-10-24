@@ -22,7 +22,7 @@ public class Main extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Tạo các panel chính
+        // ✅ Tạo các panel chính (chỉ tạo GameBoard một lần)
         GameBoard gameBoardPanel = new GameBoard(this);
         gameBoardPanel.setName("GAMEBOARD");
 
@@ -33,7 +33,7 @@ public class Main extends JFrame {
         GameOver gameOverPanel = new GameOver(this);
         LevelMenu levelMenuPanel = new LevelMenu(this);
 
-        // Liên kết level menu với game board để lấy dữ liệu màn chơi
+        // Liên kết LevelMenu với GameBoard
         gameBoardPanel.setLevelMenu(levelMenuPanel);
 
         // Thêm các panel vào layout
@@ -53,7 +53,6 @@ public class Main extends JFrame {
         GameBoard gameBoard = null;
 
         if (panelName.equals("GAMEBOARD")) {
-            // Tìm panel GameBoard
             for (Component comp : mainPanel.getComponents()) {
                 if ("GAMEBOARD".equals(comp.getName()) && comp instanceof GameBoard) {
                     gameBoard = (GameBoard) comp;
@@ -66,10 +65,8 @@ public class Main extends JFrame {
             }
         }
 
-        // Chuyển sang panel
         cardLayout.show(mainPanel, panelName);
 
-        // Sau khi chuyển, đảm bảo GameBoard nhận focus để điều khiển được
         if (gameBoard != null) {
             SwingUtilities.invokeLater(gameBoard::requestFocusInWindow);
         }

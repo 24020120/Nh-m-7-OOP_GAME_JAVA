@@ -1,18 +1,16 @@
 package GameBoard;
 
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import Collidable.CollisionManager;
-
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import Collidable.CollisionManager;
 import Game.Main;
 import GameObject.*;
 import Menu.LevelMenu;
+import Item.Item;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
@@ -26,7 +24,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private Ball ball;
     private CollisionManager collisionManager;
     private List<Brick> bricks;
+    private List<Item> items;
     private score score;
+    private ShieldBarrier shield;
     private LevelMenu levelMenu;
 
     private boolean gameOver = false;
@@ -36,29 +36,15 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
-    private Random rand = new Random();
-
     public GameBoard(Main mainFrame) {
         this.mainFrame = mainFrame;
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
         setFocusable(true);
-        setFocusTraversalKeysEnabled(false);
-        addKeyListener(this);
-
-        initGame();
-
-        // Đảm bảo focus sau khi hiển thị panel
-        SwingUtilities.invokeLater(() -> requestFocusInWindow());
-    }
-
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        requestFocusInWindow();
         addKeyListener(this);
     }
 
+    // Cho phép Main truyền LevelMenu để đọc level hiện tại
     public void setLevelMenu(LevelMenu levelMenu) {
         this.levelMenu = levelMenu;
     }
@@ -67,33 +53,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameOver = false;
         gameWin = false;
         destroyedBricksCount = 0;
-
-        player = new Paddle(WIDTH / 2 - 50, HEIGHT - 60, 100, 30);
-        ball = new Ball(WIDTH / 2 - 50, HEIGHT - 40, 12, 3, -3);
-        collisionManager = new CollisionManager();
-        score = new score();
-        bricks = new ArrayList<>();
-
-        final int BRICK_X = 10;
-        final int BRICK_Y = 6;
-        final int BRICK_WIDTH = 48;
-        final int BRICK_HEIGHT = 20;
-        final int START_Y_OFFSET = 70;
-        final int brickSpacing = 2;
-
-        int totalBrickWidth = BRICK_X * (BRICK_WIDTH + brickSpacing);
-        int startX = (WIDTH - totalBrickWidth) / 2;
-
-        for (int i = 0; i < BRICK_X; i++) {
-            for (int j = 0; j < BRICK_Y; j++) {
-                int typeIndex = (i + j) % 2;
-                bricks.add(new Brick(
-                        startX + i * (BRICK_WIDTH + brickSpacing),
-                        START_Y_OFFSET + j * (BRICK_HEIGHT + brickSpacing),
-                        BRICK_WIDTH, BRICK_HEIGHT,
-                        typeIndex));
-            }
-        }
 
         int paddleWidth = 100;
         int paddleHeight = 30;
@@ -116,6 +75,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         bricks = Level.createLevel(levelToLoad, WIDTH);
         totalBricks = bricks.size();
+
+        items = new ArrayList<>();
+        shield = null;
 
         if (gameThread != null) {
             gameThread.interrupt();
@@ -155,18 +117,34 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     }
 
     public void update() {
-        if (leftPressed) {
-            player.move(-1);
-        }
-        if (rightPressed) {
-            player.move(1);
-        }
+        if (leftPressed) player.move(-1);
+        if (rightPressed) player.move(1);
 
         int prevX = ball.getX();
         int prevY = ball.getY();
         ball.update();
 
         collisionManager.checkAll(this, prevX, prevY);
+
+        // Cập nhật item rơi
+        if (items != null) {
+            for (int i = items.size() - 1; i >= 0; i--) {
+                Item it = items.get(i);
+                if (it == null) continue;
+                it.update();
+                if (!it.isActive() || it.getY() > HEIGHT) {
+                    items.remove(i);
+                }
+            }
+        }
+
+        // Cập nhật shield (nếu có)
+        if (shield != null) {
+            shield.update();
+            if (shield.isExpired()) {
+                shield = null;
+            }
+        }
 
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
@@ -183,8 +161,21 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         player.draw(g);
         ball.draw(g);
+
         for (Brick brick : bricks) {
             brick.draw(g);
+        }
+
+        // Vẽ item (rơi từ brick)
+        if (items != null) {
+            for (Item it : items) {
+                it.draw(g);
+            }
+        }
+
+        // Vẽ shield
+        if (shield != null) {
+            shield.draw(g);
         }
 
         score.draw(g);
@@ -208,14 +199,12 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!gameOver && !gameWin) {
+        if (!gameOver && !gameWin && player != null) {
             if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
                 leftPressed = true;
-                player.move(-1);
             }
             if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
                 rightPressed = true;
-                player.move(1);
             }
         }
 
@@ -237,7 +226,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    // Getter
+    // Getters & Setters
     public Ball getBall() {
         return ball;
     }
@@ -250,8 +239,25 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         return bricks;
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void addItem(Item item) {
+        if (items == null) items = new ArrayList<>();
+        items.add(item);
+    }
+
     public score getScore() {
         return score;
+    }
+
+    public ShieldBarrier getShield() {
+        return shield;
+    }
+
+    public void setShield(ShieldBarrier shield) {
+        this.shield = shield;
     }
 
     public void setGameOver(boolean gameOver) {

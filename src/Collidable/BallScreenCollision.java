@@ -2,6 +2,8 @@ package Collidable;
 
 import GameBoard.GameBoard;
 
+import GameObject.ShieldBarrier;
+
 public class BallScreenCollision extends Collidable {
 
     @Override
@@ -19,6 +21,14 @@ public class BallScreenCollision extends Collidable {
         if (ball.getY() < 0) {
             ball.setDy(Math.abs(ball.getDy()));
             ball.setY(0);
+        }
+
+        // if a shield barrier exists and the ball intersects it, bounce the ball
+        ShieldBarrier shield = board.getShield();
+        if (shield != null && ball.getBounds().intersects(shield.getBounds()) && ball.getDy() > 0) {
+            ball.setDy(-Math.abs(ball.getDy()));
+            ball.setY(shield.getY() - ball.getHeight());
+            return;
         }
 
         if (ball.getY() > GameBoard.HEIGHT - ball.getHeight()) {

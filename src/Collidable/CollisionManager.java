@@ -10,7 +10,8 @@ public class CollisionManager {
         collidables = List.of(
                 new BallScreenCollision(),
                 new BallPaddleCollision(),
-                new BallBrickCollision()
+                new BallBrickCollision(),
+                new ItemPaddleCollision() //  thêm xử lý va chạm giữa vật phẩm và thanh đỡ
         );
     }
 
