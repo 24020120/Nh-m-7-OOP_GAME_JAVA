@@ -8,9 +8,10 @@ public class CollisionManager {
 
     public CollisionManager() {
         collidables = List.of(
-                new BallScreenCollision(),
-                new BallPaddleCollision(),
-                new BallBrickCollision()
+            new BallScreenCollision(),
+            new BallPaddleCollision(),
+            new BallBrickCollision(),
+            new ItemPaddleCollision()
         );
     }
 

@@ -8,10 +8,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import Game.Main;
 import GameObject.*;
 import Menu.LevelMenu;
+import GameObject.ShieldBarrier;
+import Item.Item;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
@@ -26,7 +27,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private CollisionManager collisionManager;
     private List<Brick> bricks;
     private LevelMenu levelMenu;
+    private List<Item> items;
     private score score; // Đảm bảo lớp Score đã được triển khai
+    private ShieldBarrier shield;
 
     private boolean gameOver = false;
     private boolean gameWin = false;
@@ -35,7 +38,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private boolean leftPressed = false; // trang thai phím
     private boolean rightPressed = false;
 
-    private Random rand = new Random();
+    // removed unused Random; if needed later re-enable
 
     public GameBoard(Main mainFrame) {
         this.mainFrame = mainFrame;
@@ -76,6 +79,11 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
         bricks = Level.createLevel(levelToLoad, WIDTH);
         totalBricks = bricks.size();
+        // initialize items list
+        items = new ArrayList<>();
+
+        // clear any existing shield when new game starts
+        this.shield = null;
 
         if (gameThread != null) {
             gameThread.interrupt();
@@ -129,6 +137,26 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         ball.update();
 
         collisionManager.checkAll(this, prevX, prevY);
+
+        // update falling items and remove inactive / off-screen
+        if (items != null) {
+            for (int i = items.size() - 1; i >= 0; i--) {
+                Item it = items.get(i);
+                if (it == null) continue;
+                it.update();
+                if (!it.isActive() || it.getY() > HEIGHT) {
+                    items.remove(i);
+                }
+            }
+        }
+
+        // update shield lifetime
+        if (shield != null) {
+            shield.update();
+            if (shield.isExpired()) {
+                shield = null;
+            }
+        }
 
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
@@ -198,8 +226,22 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         player.draw(g);
         ball.draw(g);
+
+        // draw bricks first so items will render on top of them
         for (Brick brick : bricks) {
             brick.draw(g);
+        }
+
+        // draw falling items (render above bricks)
+        if (items != null) {
+            for (Item it : items) {
+                it.draw(g);
+            }
+        }
+
+        // draw active shield (if any)
+        if (shield != null) {
+            shield.draw(g);
         }
 
         score.draw(g);
@@ -261,8 +303,25 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         return bricks;
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void addItem(Item item) {
+        if (items == null) items = new ArrayList<>();
+        items.add(item);
+    }
+
     public score getScore() {
         return score;
+    }
+
+    public ShieldBarrier getShield() {
+        return shield;
+    }
+
+    public void setShield(ShieldBarrier shield) {
+        this.shield = shield;
     }
 
     public void setGameOver(boolean gameOver) {
