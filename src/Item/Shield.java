@@ -1,34 +1,56 @@
 package Item;
 
-import java.awt.Color;
-
 import GameBoard.GameBoard;
 import GameObject.ShieldBarrier;
+import java.awt.Color;
+import java.awt.Graphics;
 
 /**
- * Collectible Shield item. When picked up, it creates a temporary barrier at
- * the bottom of the screen which bounces balls.
+ * Vật phẩm Khiên. Khi nhặt, nó tạo ra một rào chắn ở dưới màn hình.
  */
 public class Shield extends Item {
 
-	private static final int DIAMETER = 20;
-	private static final double FALL_SPEED = 2.0;
-	private final int shieldHeight = 30; // pixels high barrier
-	private final int shieldDurationSeconds = 10; // how long the shield lasts
+    private static final int shieldDurationSeconds = 10;
+    private static final int shieldHeight = 30;
 
-	public Shield(int x, int y) {
-	super(x, y, DIAMETER, FALL_SPEED);
-	}
+    /**
+     * Hàm khởi tạo cho vật phẩm Shield.
+     * @param x Vị trí X ban đầu (nơi gạch vỡ)
+     * @param y Vị trí Y ban đầu (nơi gạch vỡ)
+     */
+    public Shield(int x, int y) {
 
-	@Override
-	protected Color getColor() {
-		return Color.MAGENTA;
-	}
+        super(x, y);
 
-	@Override
-	public void applyEffect(GameBoard board) {
-		// Create a shield barrier that spans the bottom and lasts for shieldDurationSeconds
-		ShieldBarrier shield = new ShieldBarrier(shieldHeight, shieldDurationSeconds);
-		board.setShield(shield);
-	}
+        this.width = 20;
+        this.height = 20;
+    }
+
+    /**
+     * Áp dụng hiệu ứng: Tạo ra một ShieldBarrier ở dưới cùng GameBoard.
+     */
+    @Override
+    public void applyEffect(GameBoard board) {
+
+        ShieldBarrier newShield = new ShieldBarrier(shieldHeight, shieldDurationSeconds);
+        board.setShield(newShield);
+    }
+
+    /**
+     * Vẽ vật phẩm Shield (khi nó đang rơi).
+     * Đây là phương thức bắt buộc phải có vì nó kế thừa từ Item.
+     */
+    @Override
+    public void draw(Graphics g) {
+        if (isActive()) {
+
+            g.setColor(Color.MAGENTA);
+            g.fillRect(x, y, width, height);
+
+
+            g.setColor(Color.WHITE);
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 15));
+            g.drawString("S", x + 6, y + 15);
+        }
+    }
 }

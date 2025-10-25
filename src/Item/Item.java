@@ -1,56 +1,58 @@
 package Item;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import GameBoard.GameBoard;
-import GameObject.GameObject;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 
 /**
- * Base abstract class for falling items (power-ups).
- * Items are circular and slowly fall down; when they reach the paddle
- * they should apply their effect (applyEffect) and disappear.
+ * Lớp cơ sở trừu tượng cho tất cả các vật phẩm (Items).
  */
-public abstract class Item extends GameObject {
+public abstract class Item {
+    protected int x, y, width = 20, height = 20;
+    protected boolean active = true;
 
-    protected double fallSpeed;
-    private boolean active = true;
-
-    public Item(int x, int y, int diameter, double fallSpeed) {
-        super(x, y, diameter, diameter);
-        this.fallSpeed = fallSpeed;
-    }
-
-    @Override
-    public void update() {
-        // fall down
-        this.y += fallSpeed;
-    }
-
-    @Override
-    public void draw(Graphics g) {
-        Color c = getColor();
-        if (c != null) g.setColor(c);
-        g.fillOval(x, y, width, height);
+    public Item(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     /**
-     * Color used to draw this item.
-     */
-    protected abstract Color getColor();
-
-    /**
-     * Apply the item effect to the given board (called when picked up).
-     * Implementations should perform their buff and any state changes.
+     * Áp dụng hiệu ứng của item lên GameBoard (ví dụ: thêm bóng, tạo khiên).
      */
     public abstract void applyEffect(GameBoard board);
+
+    /**
+     * Vẽ item lên màn hình.
+     */
+    public abstract void draw(Graphics g);
+
+    /**
+     * Cập nhật vị trí item (cho item rơi xuống).
+     */
+    public void update() {
+        y += 2; // Tốc độ rơi
+        if (y > GameBoard.HEIGHT) {
+            active = false;
+        }
+    }
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
+    }
 
     public boolean isActive() {
         return active;
     }
 
     public void deactivate() {
-        this.active = false;
+        active = false;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getX() {
+        return x;
     }
 }
-

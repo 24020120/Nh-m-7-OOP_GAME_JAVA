@@ -1,6 +1,7 @@
 package Collidable;
 
 import GameBoard.GameBoard;
+import GameObject.Ball;
 import java.util.List;
 
 public class CollisionManager {
@@ -11,13 +12,33 @@ public class CollisionManager {
                 new BallScreenCollision(),
                 new BallPaddleCollision(),
                 new BallBrickCollision(),
-                new ItemPaddleCollision() //  thêm xử lý va chạm giữa vật phẩm và thanh đỡ
+                new ItemPaddleCollision()
         );
     }
 
-    public void checkAll(GameBoard board, int prevX, int prevY) {
+    /**
+     * Kiểm tra tất cả va chạm LIÊN QUAN ĐẾN BÓNG cho một quả bóng cụ thể.
+     * Được gọi lặp đi lặp lại cho mỗi quả bóng từ GameBoard.
+     */
+    public void checkBallCollisions(GameBoard board, Ball ball, int prevX, int prevY) {
         for (Collidable c : collidables) {
-            c.checkCollision(board, prevX, prevY);
+            if (!(c instanceof ItemPaddleCollision)) {
+                c.checkCollision(board, ball, prevX, prevY);
+            }
+        }
+    }
+
+    /**
+     * Kiểm tra tất cả va chạm LIÊN QUAN ĐẾN ITEM.
+     * Được gọi một lần mỗi frame từ GameBoard.
+     */
+    public void checkItemCollisions(GameBoard board) {
+        for (Collidable c : collidables) {
+
+            if (c instanceof ItemPaddleCollision) {
+
+                c.checkCollision(board, null, 0, 0);
+            }
         }
     }
 }

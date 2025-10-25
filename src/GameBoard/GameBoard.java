@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import Collidable.CollisionManager;
 import Game.Main;
@@ -15,13 +16,17 @@ import Item.Item;
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
-    private final int DELAY = 1000 / 60; // 60 FPS
+    private final int DELAY = 1000 / 60;
 
     private Main mainFrame;
     private Thread gameThread;
 
     private Paddle player;
-    private Ball ball;
+    private List<Ball> balls;
+
+
+    private List<Ball> ballsToRemove = new ArrayList<>();
+
     private CollisionManager collisionManager;
     private List<Brick> bricks;
     private List<Item> items;
@@ -44,7 +49,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         addKeyListener(this);
     }
 
-    // Cho phép Main truyền LevelMenu để đọc level hiện tại
     public void setLevelMenu(LevelMenu levelMenu) {
         this.levelMenu = levelMenu;
     }
@@ -63,7 +67,12 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         int ballDiameter = 12;
         int ballX = paddleX + (paddleWidth - ballDiameter) / 2;
         int ballY = paddleY - ballDiameter - 2;
-        ball = new Ball(ballX, ballY, ballDiameter, 3, -3);
+
+        balls = new ArrayList<>();
+        balls.add(new Ball(ballX, ballY, ballDiameter, 3, -3));
+
+
+        ballsToRemove.clear();
 
         collisionManager = new CollisionManager();
         score = new score();
@@ -120,25 +129,43 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         if (leftPressed) player.move(-1);
         if (rightPressed) player.move(1);
 
-        int prevX = ball.getX();
-        int prevY = ball.getY();
-        ball.update();
 
-        collisionManager.checkAll(this, prevX, prevY);
+        Iterator<Ball> ballIterator = balls.iterator();
+        while (ballIterator.hasNext()) {
+            Ball b = ballIterator.next();
 
-        // Cập nhật item rơi
+            int prevX = b.getX();
+            int prevY = b.getY();
+            b.update();
+            collisionManager.checkBallCollisions(this, b, prevX, prevY);
+        }
+
+
+        if (!ballsToRemove.isEmpty()) {
+            balls.removeAll(ballsToRemove);
+            ballsToRemove.clear();
+        }
+
+
+
         if (items != null) {
-            for (int i = items.size() - 1; i >= 0; i--) {
-                Item it = items.get(i);
+            collisionManager.checkItemCollisions(this);
+        }
+
+
+        if (items != null) {
+            Iterator<Item> itemIterator = items.iterator();
+            while (itemIterator.hasNext()) {
+                Item it = itemIterator.next();
                 if (it == null) continue;
                 it.update();
                 if (!it.isActive() || it.getY() > HEIGHT) {
-                    items.remove(i);
+                    itemIterator.remove();
                 }
             }
         }
 
-        // Cập nhật shield (nếu có)
+
         if (shield != null) {
             shield.update();
             if (shield.isExpired()) {
@@ -146,8 +173,14 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
 
+
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
+        }
+
+
+        if (balls.isEmpty() && !gameWin) {
+            setGameOver(true);
         }
     }
 
@@ -155,25 +188,26 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (player == null || ball == null || bricks == null || score == null) {
+        if (player == null || balls == null || bricks == null || score == null) {
             return;
         }
 
         player.draw(g);
-        ball.draw(g);
+
+        for (Ball b : balls) {
+            b.draw(g);
+        }
 
         for (Brick brick : bricks) {
             brick.draw(g);
         }
 
-        // Vẽ item (rơi từ brick)
         if (items != null) {
             for (Item it : items) {
                 it.draw(g);
             }
         }
 
-        // Vẽ shield
         if (shield != null) {
             shield.draw(g);
         }
@@ -226,9 +260,26 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    // Getters & Setters
-    public Ball getBall() {
-        return ball;
+
+    public List<Ball> getBalls() {
+        return balls;
+    }
+
+    public void addBall(Ball b) {
+        if (this.balls != null) {
+            this.balls.add(b);
+        }
+    }
+
+    /**
+     * Xóa một quả bóng (AN TOÀN).
+     * Thay vì xóa ngay, thêm vào danh sách chờ xóa.
+     */
+    public void removeBall(Ball b) {
+        if (this.balls != null) {
+            // this.balls.remove(b);
+            ballsToRemove.add(b);
+        }
     }
 
     public Paddle getPlayer() {
