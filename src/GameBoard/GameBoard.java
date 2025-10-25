@@ -12,6 +12,10 @@ import java.util.Random;
 import Game.Main;
 import GameObject.*;
 import Menu.LevelMenu;
+import GameObject.Bullet;
+import GameObject.Brick;
+import java.util.Iterator;
+import java.awt.Graphics;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
@@ -32,6 +36,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private boolean gameWin = false;
     private int totalBricks = 0;
     private int destroyedBricksCount = 0;
+
+    private List<Bullet> activeBullets = new ArrayList<>();
 
     private Random rand = new Random();
 
@@ -116,12 +122,41 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         int prevX = ball.getX();
         int prevY = ball.getY();
         ball.update();
+        Iterator<Bullet> bulletIterator = activeBullets.iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
 
+            // Di chuyển đạn
+            bullet.move();
+
+            // Xử lý va chạm
+            if (checkBulletBrickCollision(bullet)) {
+                // Nếu va chạm, đạn đã được setInactive bên trong hàm check
+                // và ta có thể bỏ qua các bước kiểm tra tiếp theo
+            }
+
+            // Xóa đạn không hoạt động (đã chạm hoặc ra khỏi màn hình)
+            if (!bullet.isActive()) {
+                bulletIterator.remove();
+            }
+        }
         collisionManager.checkAll(this, prevX, prevY);
 
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
         }
+    }
+    private boolean checkBulletBrickCollision(Bullet bullet) {
+        if (!bullet.isActive()) return false;
+        for (int i = 0; i < bricks.size(); i++) {
+            Brick brick = bricks.get(i);
+            if (brick.isVisible() && bullet.getBounds().intersects(brick.getBounds())) {
+                brick.hit();
+                bullet.setInactive();
+                return true; //
+            }
+        }
+        return false;
     }
 
     /*
@@ -179,8 +214,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        // If the game hasn't been initialized yet, skip drawing game objects
         if (player == null || ball == null || bricks == null || score == null) {
             return;
         }
@@ -193,10 +226,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         score.draw(g);
 
-        if (gameOver) {
-            // When gameOver is true, the board will be reset to the initial state
-            // via setGameOver(true) calling initGame(). Do not switch panels here.
-        }
+        if (gameOver) {}
 
         if (gameWin) {
             g.setColor(Color.YELLOW);
@@ -206,6 +236,11 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
 
         Toolkit.getDefaultToolkit().sync();
+        for (Bullet bullet : activeBullets) {
+            if (bullet.isActive()) {
+                bullet.draw(g);
+            }
+        }
     }
 
     @Override
@@ -221,6 +256,12 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         if ((gameOver || gameWin) && e.getKeyCode() == KeyEvent.VK_SPACE) {
             initGame();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            Bullet newBullet = player.shoot();
+            if (newBullet != null) {
+                activeBullets.add(newBullet); // Thêm đạn vào danh sách
+            }
         }
     }
 

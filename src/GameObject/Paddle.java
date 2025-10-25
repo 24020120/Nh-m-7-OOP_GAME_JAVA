@@ -5,13 +5,35 @@ import java.awt.Graphics;
 
 public class Paddle extends GameObject {
     private final int MOVE_SPEED = 30;
+    private boolean canShoot = true;
 
     public Paddle(int x, int y, int width, int height) {
         super(x, y, width, height);
     }
+    public void activateShooting() {
+        this.canShoot = true;
+    }
 
+    public void deactivateShooting() {
+        this.canShoot = false;
+    }
+
+    /**
+     * Bắn một viên đạn nếu đang ở chế độ bắn.
+     * @return Viên đạn mới được tạo, hoặc null nếu không thể bắn.
+     */
+    public Bullet shoot() {
+        if (canShoot) {
+            int startX = this.x + (this.width / 2);
+            int startY = this.y;
+
+            Bullet newBullet = new Bullet(startX, startY);
+            return newBullet;
+        }
+        return null;
+    }
     @Override
-    public void update() {} // Không cần update tự động
+    public void update() {}
 
     @Override
     public void draw(Graphics g) {
