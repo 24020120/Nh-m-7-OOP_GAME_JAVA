@@ -40,7 +40,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
-    private boolean spacePressed = false;
 
     public GameBoard(Main mainFrame) {
         this.mainFrame = mainFrame;
@@ -58,7 +57,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameOver = false;
         gameWin = false;
         destroyedBricksCount = 0;
-        spacePressed = false;
 
         int paddleWidth = 100;
         int paddleHeight = 30;
