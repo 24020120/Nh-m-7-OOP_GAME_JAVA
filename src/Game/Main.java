@@ -6,6 +6,7 @@ import GameBoard.GameBoard;
 import GameOver.GameOver;
 import java.awt.CardLayout;
 import java.awt.Component;
+
 public class Main extends JFrame {
 
     private CardLayout cardLayout;
@@ -20,16 +21,21 @@ public class Main extends JFrame {
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+
         GameBoard gameBoardPanel = new GameBoard(this);
         gameBoardPanel.setName("GAMEBOARD");
+
         Menu menuPanel = new Menu(this);
         Instruct instructPanel = new Instruct(this);
         Setting settingsPanel = new Setting(this);
         Exit exitPanel = new Exit(this);
         GameOver gameOverPanel = new GameOver(this);
         LevelMenu levelMenuPanel = new LevelMenu(this);
-        // Inject levelMenu into the game board so it can read selected level bricks
+
+        // Liên kết LevelMenu với GameBoard
         gameBoardPanel.setLevelMenu(levelMenuPanel);
+
+        // Thêm các panel vào layout
         mainPanel.add(gameBoardPanel, "GAMEBOARD");
         mainPanel.add(menuPanel, "MENU");
         mainPanel.add(instructPanel, "INSTRUCTIONS");
@@ -37,14 +43,15 @@ public class Main extends JFrame {
         mainPanel.add(exitPanel, "EXIT");
         mainPanel.add(gameOverPanel, "GAMEOVER");
         mainPanel.add(levelMenuPanel, "LEVELMENU");
+
         add(mainPanel);
         switchToPanel("MENU"); // Bắt đầu ở màn hình Menu
     }
+
     public void switchToPanel(String panelName) {
         GameBoard gameBoard = null;
 
         if (panelName.equals("GAMEBOARD")) {
-            // Find it once
             for (Component comp : mainPanel.getComponents()) {
                 if ("GAMEBOARD".equals(comp.getName()) && comp instanceof GameBoard) {
                     gameBoard = (GameBoard) comp;

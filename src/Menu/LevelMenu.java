@@ -1,23 +1,18 @@
 package Menu;
 
 import Game.Main;
-import GameBoard.Level;
-import GameBoard.GameBoard;
 import GameObject.Brick;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener; // --- NEW --- Import for button clicks
-import java.util.ArrayList;
 import java.util.List; // --- NEW --- Import for List
 
 public class LevelMenu extends JPanel {
-    private Main mainFrame;
+    // constructor parameter 'mainFrame' is captured by lambdas; no field needed
     private Image backgroundImage;
     private List<Brick> bricks; // kept for compatibility but will not be used
     private int selectedLevel = 0;
 
     public LevelMenu(Main mainFrame) {
-        this.mainFrame = mainFrame;
 
         backgroundImage = new ImageIcon("images/background.png").getImage();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -45,12 +40,14 @@ public class LevelMenu extends JPanel {
 
         // Add actions to the buttons
         level1Button.addActionListener(e -> {
+            e.getSource();
             System.out.println("Selected Level 1");
             selectedLevel = 1;
             mainFrame.switchToPanel("GAMEBOARD");
         });
 
         level2Button.addActionListener(e -> {
+            e.getSource();
             System.out.println("Selected Level 2");
             selectedLevel = 2;
             mainFrame.switchToPanel("GAMEBOARD");
