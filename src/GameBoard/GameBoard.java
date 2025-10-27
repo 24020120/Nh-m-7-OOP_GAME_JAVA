@@ -24,7 +24,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private Paddle player;
     private List<Ball> balls;
 
-
     private List<Ball> ballsToRemove = new ArrayList<>();
 
     private CollisionManager collisionManager;
@@ -40,6 +39,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private int destroyedBricksCount = 0;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
+
 
     public GameBoard(Main mainFrame) {
         this.mainFrame = mainFrame;
@@ -93,6 +93,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
         gameThread = new Thread(this);
         gameThread.start();
+
+        if (player != null) {
+            player.clearBullets(); // Xóa đạn cũ khi bắt đầu game mới
+        }
     }
 
     @Override
@@ -129,6 +133,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         if (leftPressed) player.move(-1);
         if (rightPressed) player.move(1);
 
+        if (player != null) {
+            player.update();
+            checkBulletCollisions();
+        }
 
         Iterator<Ball> ballIterator = balls.iterator();
         while (ballIterator.hasNext()) {
@@ -320,5 +328,36 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     public void incrementDestroyedBricks() {
         destroyedBricksCount++;
+    }
+
+    private void checkBulletCollisions() {
+        if (player == null || bricks == null) return;
+
+        List<Bullet> bullets = player.getBullets();
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+
+            // Kiểm tra va chạm với gạch
+            Iterator<Brick> brickIterator = bricks.iterator();
+            while (brickIterator.hasNext()) {
+                Brick brick = brickIterator.next();
+                if (brick.isVisible() &&
+                        bullet.getX() < brick.getX() + brick.getWidth() &&
+                        bullet.getX() + bullet.getWidth() > brick.getX() &&
+                        bullet.getY() < brick.getY() + brick.getHeight() &&
+                        bullet.getY() + bullet.getHeight() > brick.getY()) {
+
+                    // Va chạm xảy ra
+                    brick.hit();
+                    bullet.setActive(false);
+                    incrementDestroyedBricks();
+                    score.addScore(10);
+
+                    break;
+                }
+            }
+        }
     }
 }

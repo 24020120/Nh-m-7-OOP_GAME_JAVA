@@ -11,11 +11,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class Start extends JPanel {
-    private Main gameFrame;
+    // constructor parameter 'gameFrame' will be captured by the mouse listener; no field needed
     private BufferedImage startBG;
 
     public Start(Main gameFrame) {
-        this.gameFrame = gameFrame;
         setSize(800, 600);
 
         try {
