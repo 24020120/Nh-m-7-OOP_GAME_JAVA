@@ -13,7 +13,10 @@ public class Return extends JPanel {
         JButton returnButton = new JButton("Return to Menu");
         returnButton.setFont(new Font("Arial", Font.BOLD, 16));
 
-        returnButton.addActionListener(e -> mainFrame.switchToPanel("MENU"));
+        returnButton.addActionListener(e -> {
+            e.getSource();
+            mainFrame.switchToPanel("MENU");
+        });
 
         add(returnButton);
     }

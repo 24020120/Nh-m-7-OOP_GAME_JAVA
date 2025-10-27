@@ -5,11 +5,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Menu extends JPanel {
-    private Main mainFrame;
     private Image backgroundImage;
 
     public Menu(Main mainFrame) {
-        this.mainFrame = mainFrame;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
@@ -29,14 +27,23 @@ public class Menu extends JPanel {
 
         JButton playButton = createMenuButton("Start Game");
 
-        playButton.addActionListener(e -> mainFrame.switchToPanel("LEVELMENU"));
+        playButton.addActionListener(e -> {
+            e.getSource();
+            mainFrame.switchToPanel("LEVELMENU");
+        });
        // playButton.addActionListener(e -> JOptionPane.showMessageDialog(mainFrame, "Chức năng GameBoard sẽ được thêm ở đây!"));
 
         JButton instructButton = createMenuButton("Instructions");
-        instructButton.addActionListener(e -> mainFrame.switchToPanel("INSTRUCTIONS"));
+        instructButton.addActionListener(e -> {
+            e.getSource();
+            mainFrame.switchToPanel("INSTRUCTIONS");
+        });
 
         JButton settingsButton = createMenuButton("Settings");
-        settingsButton.addActionListener(e -> mainFrame.switchToPanel("SETTINGS"));
+        settingsButton.addActionListener(e -> {
+            e.getSource();
+            mainFrame.switchToPanel("SETTINGS");
+        });
 
         //JButton exitButton = createMenuButton("Exit");
         //exitButton.addActionListener(e -> mainFrame.switchToPanel("EXIT"));
@@ -49,7 +56,10 @@ public class Menu extends JPanel {
         exitButton.setPreferredSize(new Dimension(250, 50));
         exitButton.setMaximumSize(new Dimension(250, 50));
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exitButton.addActionListener(e -> mainFrame.switchToPanel("EXIT"));
+        exitButton.addActionListener(e -> {
+            e.getSource();
+            mainFrame.switchToPanel("EXIT");
+        });
 
         add(playButton);
         add(Box.createRigidArea(new Dimension(0, 20)));
