@@ -58,4 +58,3 @@ public class Level {
         return bricks;
     }
 }
-
