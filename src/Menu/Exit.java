@@ -7,14 +7,14 @@ import java.awt.*;
 public class Exit extends JPanel {
     private Main mainFrame;
     private Image backgroundImage;
+
     public Exit(Main mainFrame) {
         this.mainFrame = mainFrame;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-
         backgroundImage = new ImageIcon("images/background.png").getImage();
-        //setBackground(new Color(40, 40, 60));
-       // setLayout(new GridBagLayout());
+
+        // setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -44,12 +44,10 @@ public class Exit extends JPanel {
         add(confirmationLabel, gbc);
         add(buttonPanel, gbc);
     }
+
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-
     }
 }
-

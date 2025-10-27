@@ -17,17 +17,16 @@ public class Instruct extends JPanel {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                    g.drawImage(imageInstruct, 0, 0, getWidth(), getHeight(), this);
+                g.drawImage(imageInstruct, 0, 0, getWidth(), getHeight(), this);
 
             }
         };
 
 
-            imageInstruct = new ImageIcon("images/instruction.png").getImage();
+        imageInstruct = new ImageIcon("images/instruction.png").getImage();
 
         Return returnPanel = new Return(mainFrame);
         add(imagePanel, BorderLayout.CENTER);
         add(returnPanel, BorderLayout.SOUTH);
     }
 }
-

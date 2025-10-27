@@ -1,6 +1,6 @@
-/*package Menu;
+package Menu;
 
-import Game.Main; // SỬA LỖI: Import lớp Main từ package Game
+import Game.Main;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 public class Start extends JPanel {
     private Main gameFrame;
@@ -17,13 +18,13 @@ public class Start extends JPanel {
         this.gameFrame = gameFrame;
         setSize(800, 600);
 
-
+        try {
             startBG = ImageIO.read(new File("images/background.png"));
-        } catch (Exception e) {
-            System.err.println("Không thể tải ảnh images/StartScreen.png. Sử dụng background mặc định.");
+        } catch (IOException e) {
             startBG = createDefaultBackground();
         }
 
+        // Khi click vào màn hình thì chuyển sang MENU
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -61,5 +62,4 @@ public class Start extends JPanel {
         g2d.setColor(Color.YELLOW);
         g2d.drawString(instruction, x, y);
     }
-}*/
-
+}

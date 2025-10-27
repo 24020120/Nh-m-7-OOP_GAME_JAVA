@@ -1,44 +1,46 @@
 package GameBoard;
 
-import javax.swing.JPanel;
-
-import Collidable.CollisionManager;
-
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+
+import Collidable.CollisionManager;
 import Game.Main;
 import GameObject.*;
 import Menu.LevelMenu;
-import GameObject.ShieldBarrier;
 import Item.Item;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static final int WIDTH = 800;
     public static final int HEIGHT = 600;
-    private final int DELAY = 1000 / 60; // 60 FPS
+    private final int DELAY = 1000 / 60;
 
     private Main mainFrame;
     private Thread gameThread;
 
     private Paddle player;
-    private Ball ball;
+    private List<Ball> balls;
+
+    private List<Ball> ballsToRemove = new ArrayList<>();
+
     private CollisionManager collisionManager;
     private List<Brick> bricks;
-    private LevelMenu levelMenu;
     private List<Item> items;
-    private score score; // Đảm bảo lớp Score đã được triển khai
+    private score score;
     private ShieldBarrier shield;
+    private LevelMenu levelMenu;
 
     private boolean gameOver = false;
     private boolean gameWin = false;
     private int totalBricks = 0;
     private int destroyedBricksCount = 0;
-    private boolean leftPressed = false; // trang thai phím
+    private boolean leftPressed = false;
     private boolean rightPressed = false;
 
-    // removed unused Random; if needed later re-enable
+    private boolean spacePressed = false;
 
     public GameBoard(Main mainFrame) {
         this.mainFrame = mainFrame;
@@ -48,7 +50,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         addKeyListener(this);
     }
 
-    // allow Main to inject the LevelMenu so GameBoard can read selected bricks
     public void setLevelMenu(LevelMenu levelMenu) {
         this.levelMenu = levelMenu;
     }
@@ -57,39 +58,47 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameOver = false;
         gameWin = false;
         destroyedBricksCount = 0;
+        spacePressed = false;
 
         int paddleWidth = 100;
         int paddleHeight = 30;
         int paddleX = WIDTH / 2 - paddleWidth / 2;
-        // Ensure paddle is at least 25 pixels from bottom
         int paddleY = HEIGHT - paddleHeight - 25;
         player = new Paddle(paddleX, paddleY, paddleWidth, paddleHeight);
 
         int ballDiameter = 12;
-        // Place the ball centered on the paddle and just above it
         int ballX = paddleX + (paddleWidth - ballDiameter) / 2;
-        int ballY = paddleY - ballDiameter - 2; // 2px gap above paddle
-        ball = new Ball(ballX, ballY, ballDiameter, 3, -3);
+        int ballY = paddleY - ballDiameter - 2;
+
+        balls = new ArrayList<>();
+        balls.add(new Ball(ballX, ballY, ballDiameter, 3, -3));
+
+
+        ballsToRemove.clear();
+
         collisionManager = new CollisionManager();
         score = new score();
-        // Prefer level selected from LevelMenu (if provided); otherwise load default level 1
+
         int levelToLoad = 1;
         if (levelMenu != null && levelMenu.getSelectedLevel() > 0) {
             levelToLoad = levelMenu.getSelectedLevel();
         }
+
         bricks = Level.createLevel(levelToLoad, WIDTH);
         totalBricks = bricks.size();
-        // initialize items list
-        items = new ArrayList<>();
 
-        // clear any existing shield when new game starts
-        this.shield = null;
+        items = new ArrayList<>();
+        shield = null;
 
         if (gameThread != null) {
             gameThread.interrupt();
         }
         gameThread = new Thread(this);
         gameThread.start();
+
+        if (player != null) {
+            player.clearBullets(); // Xóa đạn cũ khi bắt đầu game mới
+        }
     }
 
     @Override
@@ -123,34 +132,50 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     }
 
     public void update() {
+        if (leftPressed) player.move(-1);
+        if (rightPressed) player.move(1);
 
-        if (leftPressed) {
-            player.move(-1);
+        if (player != null) {
+            player.update();
+            checkBulletCollisions();
         }
-        if (rightPressed) {
-            player.move(1);
+
+        Iterator<Ball> ballIterator = balls.iterator();
+        while (ballIterator.hasNext()) {
+            Ball b = ballIterator.next();
+
+            int prevX = b.getX();
+            int prevY = b.getY();
+            b.update();
+            collisionManager.checkBallCollisions(this, b, prevX, prevY);
         }
 
 
-        int prevX = ball.getX();
-        int prevY = ball.getY();
-        ball.update();
+        if (!ballsToRemove.isEmpty()) {
+            balls.removeAll(ballsToRemove);
+            ballsToRemove.clear();
+        }
 
-        collisionManager.checkAll(this, prevX, prevY);
 
-        // update falling items and remove inactive / off-screen
+
         if (items != null) {
-            for (int i = items.size() - 1; i >= 0; i--) {
-                Item it = items.get(i);
+            collisionManager.checkItemCollisions(this);
+        }
+
+
+        if (items != null) {
+            Iterator<Item> itemIterator = items.iterator();
+            while (itemIterator.hasNext()) {
+                Item it = itemIterator.next();
                 if (it == null) continue;
                 it.update();
                 if (!it.isActive() || it.getY() > HEIGHT) {
-                    items.remove(i);
+                    itemIterator.remove();
                 }
             }
         }
 
-        // update shield lifetime
+
         if (shield != null) {
             shield.update();
             if (shield.isExpired()) {
@@ -158,88 +183,41 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
 
+
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
         }
-    }
-
-    /*
-    private void checkCollisions(int prevX, int prevY) {
-
-        if (ball.getX() < 0) {
-            ball.setDx(Math.abs(ball.getDx()));
-            ball.setX(0);
-        } else if (ball.getX() > (WIDTH - ball.getWidth())) {
-            ball.setDx(-Math.abs(ball.getDx()));
-            ball.setX(WIDTH - ball.getWidth());
-        }
-
-        if (ball.getY() < 0) {
-            ball.setDy(Math.abs(ball.getDy()));
-            ball.setY(0);
-        }
-
-        if (ball.getY() > HEIGHT - ball.getHeight()) {
-            gameOver = true;
-        }
 
 
-        if (player.getBounds().intersects(ball.getBounds()) && ball.getDy() > 0) {
-            ball.setDy(-Math.abs(ball.getDy()));
-
-            double hitPoint = ball.getBounds().getCenterX();
-            double paddleCenter = player.getBounds().getCenterX();
-            double relativeIntersect = (hitPoint - paddleCenter) / (player.getWidth() / 2.0);
-
-            ball.setDx(relativeIntersect * 5.0);
-        }
-
-        for (Brick brick : bricks) {
-            if (brick.isVisible() && ball.getBounds().intersects(brick.getBounds())) {
-
-                brick.hit();
-                score.addScore(10);
-                destroyedBricksCount++;
-
-                if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
-                    ball.setDx(-ball.getDx());
-                }
-                else {
-                    ball.setDy(-ball.getDy());
-                }
-
-                break;
-            }
+        if (balls.isEmpty() && !gameWin) {
+            setGameOver(true);
         }
     }
-
-    */
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // If the game hasn't been initialized yet, skip drawing game objects
-        if (player == null || ball == null || bricks == null || score == null) {
+        if (player == null || balls == null || bricks == null || score == null) {
             return;
         }
 
         player.draw(g);
-        ball.draw(g);
 
-        // draw bricks first so items will render on top of them
+        for (Ball b : balls) {
+            b.draw(g);
+        }
+
         for (Brick brick : bricks) {
             brick.draw(g);
         }
 
-        // draw falling items (render above bricks)
         if (items != null) {
             for (Item it : items) {
                 it.draw(g);
             }
         }
 
-        // draw active shield (if any)
         if (shield != null) {
             shield.draw(g);
         }
@@ -247,8 +225,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         score.draw(g);
 
         if (gameOver) {
-            // When gameOver is true, the board will be reset to the initial state
-            // via setGameOver(true) calling initGame(). Do not switch panels here.
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 50));
+            g.drawString("GAME OVER", WIDTH / 2 - 140, HEIGHT / 2);
+            g.drawString("Press SPACE to restart", WIDTH / 2 - 240, HEIGHT / 2 + 60);
         }
 
         if (gameWin) {
@@ -290,9 +270,26 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    //Getter
-    public Ball getBall() {
-        return ball;
+
+    public List<Ball> getBalls() {
+        return balls;
+    }
+
+    public void addBall(Ball b) {
+        if (this.balls != null) {
+            this.balls.add(b);
+        }
+    }
+
+    /**
+     * Xóa một quả bóng (AN TOÀN).
+     * Thay vì xóa ngay, thêm vào danh sách chờ xóa.
+     */
+    public void removeBall(Ball b) {
+        if (this.balls != null) {
+            // this.balls.remove(b);
+            ballsToRemove.add(b);
+        }
     }
 
     public Paddle getPlayer() {
@@ -327,12 +324,42 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
         if (gameOver && mainFrame != null) {
-            // Switch to the Game Over panel so the player can choose to return to menu or exit
             mainFrame.switchToPanel("GAMEOVER");
         }
     }
 
     public void incrementDestroyedBricks() {
         destroyedBricksCount++;
+    }
+
+    private void checkBulletCollisions() {
+        if (player == null || bricks == null) return;
+
+        List<Bullet> bullets = player.getBullets();
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+
+            // Kiểm tra va chạm với gạch
+            Iterator<Brick> brickIterator = bricks.iterator();
+            while (brickIterator.hasNext()) {
+                Brick brick = brickIterator.next();
+                if (brick.isVisible() &&
+                        bullet.getX() < brick.getX() + brick.getWidth() &&
+                        bullet.getX() + bullet.getWidth() > brick.getX() &&
+                        bullet.getY() < brick.getY() + brick.getHeight() &&
+                        bullet.getY() + bullet.getHeight() > brick.getY()) {
+
+                    // Va chạm xảy ra
+                    brick.hit();
+                    bullet.setActive(false);
+                    incrementDestroyedBricks();
+                    score.addScore(10);
+
+                    break;
+                }
+            }
+        }
     }
 }

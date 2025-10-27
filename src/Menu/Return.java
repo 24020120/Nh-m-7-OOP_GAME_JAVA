@@ -18,4 +18,3 @@ public class Return extends JPanel {
         add(returnButton);
     }
 }
-
