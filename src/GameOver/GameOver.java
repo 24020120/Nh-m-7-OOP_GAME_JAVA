@@ -13,10 +13,8 @@ public class GameOver extends JPanel{
     private BufferedImage GameOverBG;
     private Exit exitButton;
     private Return returnButton;
-    private Main mainFrame;
 
     public GameOver(Main mainFrame) {
-        this.mainFrame = mainFrame;
         setSize(800, 600);
 
         try {

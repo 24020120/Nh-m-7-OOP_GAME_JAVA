@@ -5,10 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Setting extends JPanel {
-    private Main mainFrame;
     private Image backgroundImage;
     public Setting(Main mainFrame) {
-        this.mainFrame = mainFrame;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
