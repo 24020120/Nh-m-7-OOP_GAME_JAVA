@@ -25,12 +25,15 @@ public class Level {
 
                 for (int i = 0; i < BRICK_X; i++) {
                     for (int j = 0; j < BRICK_Y; j++) {
+                        // (i + j) % 2 -> xen kẽ loại gạch 0 và 1
                         bricks.add(new Brick(
                                 startX + i * (BRICK_WIDTH + brickSpacing),
                                 START_Y_OFFSET + j * (BRICK_HEIGHT + brickSpacing),
-                                BRICK_WIDTH, BRICK_HEIGHT));
+                                BRICK_WIDTH, BRICK_HEIGHT,
+                                (i + j) % 2));
                     }
                 }
+
                 break;
             // Future levels can be added here with different layouts
             case 2:
@@ -49,13 +52,14 @@ public class Level {
                         bricks.add(new Brick(
                                 startX2 + i * (BRICK_WIDTH2 + brickSpacing2),
                                 START_Y_OFFSET2 + j * (BRICK_HEIGHT2 + brickSpacing2),
-                                BRICK_WIDTH2, BRICK_HEIGHT2));
+                                BRICK_WIDTH2, BRICK_HEIGHT2,
+                                (i + j) % 2));
                     }
                 }
+
                 break;
         }
 
         return bricks;
     }
 }
-
