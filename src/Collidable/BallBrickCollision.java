@@ -4,7 +4,7 @@ import GameBoard.GameBoard;
 import GameObject.Ball;
 import Item.Shield;
 import Item.MultiBallItem;
-import Item.ShootingItem; // THÊM IMPORT
+import Item.ShootingItem;
 import java.util.Random;
 
 public class BallBrickCollision extends Collidable {

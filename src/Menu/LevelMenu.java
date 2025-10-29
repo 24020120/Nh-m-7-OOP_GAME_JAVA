@@ -4,7 +4,7 @@ import Game.Main;
 import GameObject.Brick;
 import javax.swing.*;
 import java.awt.*;
-import java.util.List; // --- NEW --- Import for List
+import java.util.List;
 
 public class LevelMenu extends JPanel {
     // constructor parameter 'mainFrame' is captured by lambdas; no field needed
@@ -34,9 +34,10 @@ public class LevelMenu extends JPanel {
         levelButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center this panel horizontally
 
         // Create the level buttons (boxes)
-    JButton level1Button = new JButton("Level 1");
-    JButton level2Button = new JButton("Level 2");
-        //JButton level3Button = new JButton("Level 3");
+        JButton level1Button = new JButton("Level 1");
+        JButton level2Button = new JButton("Level 2");
+        JButton level3Button = new JButton("Level 3");
+        JButton level4Button = new JButton("Level 4");
 
         // Add actions to the buttons
         level1Button.addActionListener(e -> {
@@ -53,20 +54,33 @@ public class LevelMenu extends JPanel {
             mainFrame.switchToPanel("GAMEBOARD");
         });
 
-        /*
+        
         level3Button.addActionListener(e -> {
+            e.getSource();
             System.out.println("Start Level 3");
+            selectedLevel = 3;
+            //mainFrame.switchToPanel(panelName:"GAMEBOARD");
+             mainFrame.switchToPanel("GAMEBOARD");
             // e.g., mainFrame.startGame(3);
         });
-        */
-
+        
+        level4Button.addActionListener(e -> {
+            e.getSource();
+            System.out.println("Selected Level 4");
+            selectedLevel = 4;
+            mainFrame.switchToPanel("GAMEBOARD");
+        });
         // Add buttons to the horizontal panel
         levelButtonPanel.add(Box.createHorizontalGlue()); // Centers buttons
         levelButtonPanel.add(level1Button);
         levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0))); // Space between buttons
         levelButtonPanel.add(level2Button);
         levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        
+        levelButtonPanel.add(level3Button);
+        //levelButtonPanel.add(Box.createRigidArea(new Dimension(width:20, height:0)));
+        levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        levelButtonPanel.add(level4Button);
+        levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         /*
         levelButtonPanel.add(level3Button);
         levelButtonPanel.add(Box.createHorizontalGlue()); // Centers buttons
