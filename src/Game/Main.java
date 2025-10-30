@@ -22,7 +22,6 @@ public class Main extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // ✅ Tạo các panel chính (chỉ tạo GameBoard một lần)
         GameBoard gameBoardPanel = new GameBoard(this);
         gameBoardPanel.setName("GAMEBOARD");
 
