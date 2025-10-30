@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 
 public class Ball extends GameObject {
 
-    private boolean ghostMode = false; // status ball
+    private boolean ghostMode = false;
     private long ghostEndTime = 0;
 
     private Image normalImage;
@@ -25,9 +25,21 @@ public class Ball extends GameObject {
         x += dx;
         y += dy;
 
-        // Hết thời gian thì tắt ghost mode
+        // ⏰ Tự tắt ghost mode khi hết thời gian
         if (ghostMode && System.currentTimeMillis() > ghostEndTime) {
             ghostMode = false;
+        }
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        Image imgToDraw = ghostMode ? ghostImage : normalImage;
+
+        if (imgToDraw != null) {
+            g.drawImage(imgToDraw, x, y, width, height, null);
+        } else {
+            g.setColor(ghostMode ? new Color(128, 0, 128) : Color.RED);
+            g.fillOval(x, y, width, height);
         }
     }
 
@@ -38,22 +50,7 @@ public class Ball extends GameObject {
         this.dy = initialDy;
     }
 
-    @Override
-    public void draw(Graphics g) {
-        Image imgToDraw = ghostMode ? ghostImage : normalImage;
-
-        if (imgToDraw != null) {
-            // Luôn vẽ theo kích thước width, height của Ball
-            g.drawImage(imgToDraw, x, y, width, height, null);
-        } else {
-            // fallback nếu không có ảnh
-            g.setColor(ghostMode ? new Color(128, 0, 128) : Color.RED);
-            g.fillOval(x, y, width, height);
-        }
-    }
-
-
-    //  Ghost mode
+    //  Kích hoạt chế độ xuyên gạch trong durationSeconds giây
     public void activateGhostMode(int durationSeconds) {
         ghostMode = true;
         ghostEndTime = System.currentTimeMillis() + durationSeconds * 1000L;
