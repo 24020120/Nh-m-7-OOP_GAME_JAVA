@@ -4,7 +4,8 @@ import GameBoard.GameBoard;
 import GameObject.Ball;
 import Item.Shield;
 import Item.MultiBallItem;
-import Item.ShootingItem; // THÊM IMPORT
+import Item.ShootingItem;
+import Item.GhostBallItem; // THÊM IMPORT
 import java.util.Random;
 
 public class BallBrickCollision extends Collidable {
@@ -29,15 +30,19 @@ public class BallBrickCollision extends Collidable {
                     board.addItem(new Shield(spawnX, spawnY));
                 } else if (chance < 0.20) { // 10% chance MultiBall
                     board.addItem(new MultiBallItem(spawnX, spawnY));
-                } else if (chance < 0.30) { // 10% chance ShootingItem (MỚI)
+                } else if (chance < 0.30) { // 10% chance ShootingItem
                     board.addItem(new ShootingItem(spawnX, spawnY));
+                } else if (chance < 0.40) { // THÊM 10% chance GhostBall
+                    board.addItem(new GhostBallItem(spawnX, spawnY));
                 }
 
-                // Xử lý bounce
-                if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
-                    ball.setDx(-ball.getDx());
-                } else {
-                    ball.setDy(-ball.getDy());
+                // Xử lý bounce - QUAN TRỌNG: Bỏ qua nếu bóng đang ở ghost mode
+                if (!ball.isGhostMode()) {
+                    if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
+                        ball.setDx(-ball.getDx());
+                    } else {
+                        ball.setDy(-ball.getDy());
+                    }
                 }
 
                 break;

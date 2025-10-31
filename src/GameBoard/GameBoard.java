@@ -23,9 +23,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
     private Paddle player;
     private List<Ball> balls;
-
     private List<Ball> ballsToRemove = new ArrayList<>();
-
     private CollisionManager collisionManager;
     private List<Brick> bricks;
     private List<Item> items;
@@ -40,6 +38,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private boolean leftPressed = false;
     private boolean rightPressed = false;
 
+    // THÊM: Background image
+    private Image backgroundImage;
 
     public GameBoard(Main mainFrame) {
         this.mainFrame = mainFrame;
@@ -47,6 +47,20 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         setBackground(Color.BLACK);
         setFocusable(true);
         addKeyListener(this);
+
+        // Tải background image
+        loadBackgroundImage();
+    }
+
+    /**
+     * Tải hình nền cho game
+     */
+    private void loadBackgroundImage() {
+        try {
+            backgroundImage = new ImageIcon("images/game_background.png").getImage();
+        } catch (Exception e) {
+            backgroundImage = null;
+        }
     }
 
     public void setLevelMenu(LevelMenu levelMenu) {
@@ -71,7 +85,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         balls = new ArrayList<>();
         balls.add(new Ball(ballX, ballY, ballDiameter, 3, -3));
 
-
         ballsToRemove.clear();
 
         collisionManager = new CollisionManager();
@@ -95,7 +108,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameThread.start();
 
         if (player != null) {
-            player.clearBullets(); // Xóa đạn cũ khi bắt đầu game mới
+            player.clearBullets();
         }
     }
 
@@ -148,18 +161,14 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             collisionManager.checkBallCollisions(this, b, prevX, prevY);
         }
 
-
         if (!ballsToRemove.isEmpty()) {
             balls.removeAll(ballsToRemove);
             ballsToRemove.clear();
         }
 
-
-
         if (items != null) {
             collisionManager.checkItemCollisions(this);
         }
-
 
         if (items != null) {
             Iterator<Item> itemIterator = items.iterator();
@@ -173,7 +182,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
 
-
         if (shield != null) {
             shield.update();
             if (shield.isExpired()) {
@@ -181,11 +189,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
 
-
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
         }
-
 
         if (balls.isEmpty() && !gameWin) {
             setGameOver(true);
@@ -195,6 +201,11 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // VẼ BACKGROUND
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
 
         if (player == null || balls == null || bricks == null || score == null) {
             return;
@@ -226,14 +237,16 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 50));
             g.drawString("GAME OVER", WIDTH / 2 - 140, HEIGHT / 2);
-            g.drawString("Press SPACE to restart", WIDTH / 2 - 240, HEIGHT / 2 + 60);
+            g.setFont(new Font("Arial", Font.PLAIN, 24));
+            g.drawString("Press SPACE to restart", WIDTH / 2 - 140, HEIGHT / 2 + 60);
         }
 
         if (gameWin) {
             g.setColor(Color.YELLOW);
             g.setFont(new Font("Arial", Font.BOLD, 50));
             g.drawString("GAME WIN!", WIDTH / 2 - 140, HEIGHT / 2);
-            g.drawString("Press SPACE to restart", WIDTH / 2 - 240, HEIGHT / 2 + 60);
+            g.setFont(new Font("Arial", Font.PLAIN, 24));
+            g.drawString("Press SPACE to restart", WIDTH / 2 - 140, HEIGHT / 2 + 60);
         }
 
         Toolkit.getDefaultToolkit().sync();
@@ -268,7 +281,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-
     public List<Ball> getBalls() {
         return balls;
     }
@@ -279,13 +291,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    /**
-     * Xóa một quả bóng (AN TOÀN).
-     * Thay vì xóa ngay, thêm vào danh sách chờ xóa.
-     */
     public void removeBall(Ball b) {
         if (this.balls != null) {
-            // this.balls.remove(b);
             ballsToRemove.add(b);
         }
     }
@@ -339,7 +346,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         while (bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
 
-            // Kiểm tra va chạm với gạch
             Iterator<Brick> brickIterator = bricks.iterator();
             while (brickIterator.hasNext()) {
                 Brick brick = brickIterator.next();
@@ -349,7 +355,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
                         bullet.getY() < brick.getY() + brick.getHeight() &&
                         bullet.getY() + bullet.getHeight() > brick.getY()) {
 
-                    // Va chạm xảy ra
                     brick.hit();
                     bullet.setActive(false);
                     incrementDestroyedBricks();
