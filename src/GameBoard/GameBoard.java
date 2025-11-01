@@ -46,6 +46,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private int destroyedBricksCount = 0;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
+    
+
+    private Image heartImage;
 
     private Image backgroundImage;
 
@@ -79,6 +82,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         gameOver = false;
         gameWin = false;
         destroyedBricksCount = 0;
+        lives = 3;
 
         int paddleWidth = 100;
         int paddleHeight = 30;
@@ -108,6 +112,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         items = new ArrayList<>();
         shield = null;
+        heartImage = new ImageIcon("images/heart.png").getImage();
 
         if (gameThread != null) {
             gameThread.interrupt();
@@ -176,9 +181,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
 
         if (items != null) {
             collisionManager.checkItemCollisions(this);
-        }
-
-        if (items != null) {
             Iterator<Item> itemIterator = items.iterator();
             while (itemIterator.hasNext()) {
                 Item it = itemIterator.next();
@@ -197,15 +199,17 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
 
+        // Khi phá hết gạch
         if (destroyedBricksCount == totalBricks) {
             gameWin = true;
         }
 
-        if (balls.isEmpty() && !gameWin) {
-            setGameOver(true);
+        // Nếu không còn bóng nào -> mất mạng
+        if (balls.isEmpty() && !gameWin && !gameOver) {
+            decreaseLife();
         }
-        if (pauseMenu != null && pauseMenu.isActive()) return;
 
+        if (pauseMenu != null && pauseMenu.isActive()) return;
     }
 
     @Override
@@ -242,6 +246,50 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             g.setFont(new Font("Arial", Font.PLAIN, 24));
             g.drawString("Press SPACE to restart", WIDTH / 2 - 140, HEIGHT / 2 + 60);
         }
+
+        // === VẼ KHUNG MẠNG (TRÁI TIM) Ở GÓC PHẢI ===
+        if (heartImage != null) {
+            int maxLives = 3; // tổng mạng tối đa
+            int heartSize = 30;
+            int spacing = 5;
+            int margin = 10;
+
+            // Kích thước khung cố định cho 3 trái tim
+            int totalWidth = maxLives * (heartSize + spacing) - spacing;
+            int totalHeight = heartSize;
+            int x = WIDTH - totalWidth - margin - 20;
+            int y = 10;
+
+            // Khung chứa trái tim
+            int framePadding = 8;
+            int frameX = x - framePadding;
+            int frameY = y - framePadding;
+            int frameWidth = totalWidth + framePadding * 2;
+            int frameHeight = totalHeight + framePadding * 2;
+
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Nền mờ
+            g2.setColor(new Color(0, 0, 0, 120));
+            g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 15, 15);
+
+            // Viền cam
+            g2.setStroke(new BasicStroke(3));
+            g2.setColor(new Color(255, 140, 0));
+            g2.drawRoundRect(frameX, frameY, frameWidth, frameHeight, 15, 15);
+
+            // Viền sáng nhẹ bên trong
+            g2.setColor(new Color(255, 200, 80, 120));
+            g2.setStroke(new BasicStroke(1));
+            g2.drawRoundRect(frameX + 2, frameY + 2, frameWidth - 4, frameHeight - 4, 12, 12);
+
+            // Vẽ trái tim tương ứng với số mạng hiện tại
+            for (int i = 0; i < lives; i++) {
+                g2.drawImage(heartImage, x + i * (heartSize + spacing), y, heartSize, heartSize, this);
+            }
+        }
+
 
         pauseMenu.draw((Graphics2D) g);
 
@@ -444,6 +492,13 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         return new java.io.File("savegame.dat").exists();
     }
 
+    public void decreaseLife() {
+        if (!heartBreaking && lives > 0) {
+            heartBreaking = true;
+            breakingHeartIndex = lives - 1; // trái tim cuối cùng bị vỡ
+            heartBreakStartTime = System.currentTimeMillis();
+        }
+    }
 
 
 }
