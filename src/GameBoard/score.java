@@ -39,6 +39,10 @@ public class score {
         return scoreValue;
     }
 
+    public void setScore(int score) {
+        this.scoreValue = score;
+    }
+    
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
