@@ -1,12 +1,14 @@
 package Menu;
 
 import Game.Main;
+import GameBoard.GameBoard;
 import javax.swing.*;
 import java.awt.*;
 
 public class Menu extends JPanel {
     private Image backgroundImage;
     private Image titleImage;
+    private IconButton continueButton;
 
     public Menu(Main mainFrame) {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -38,6 +40,20 @@ public class Menu extends JPanel {
         add(titlePanel);
 
         add(Box.createRigidArea(new Dimension(0, 30)));
+
+        continueButton = new IconButton(
+            "images/continue_basic.png",
+            "images/continue_hover.png",
+            "images/continue_pressed.png"
+        );
+        continueButton.setPreferredSize(new Dimension(250, 50));
+        continueButton.setMaximumSize(new Dimension(250, 50));
+        continueButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        continueButton.setEnabled(GameBoard.hasSavedGame());
+        continueButton.addActionListener(e -> mainFrame.switchToPanel("CONTINUE"));
+
+        add(continueButton);
+        add(Box.createRigidArea(new Dimension(0, 15)));
 
         IconButton playButton = new IconButton(
                 "images/start_game_normal.png",
@@ -102,5 +118,9 @@ public class Menu extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+    }
+
+    public void refreshContinueButton() {
+        if (continueButton != null) continueButton.setEnabled(GameBoard.hasSavedGame());
     }
 }

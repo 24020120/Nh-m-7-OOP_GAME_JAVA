@@ -22,7 +22,6 @@ public abstract class GameObject {
         return new Rectangle(x, y, width, height);
     }
 
-    // Getters & Setters
     public int getX() { return x; }
     public int getY() { return y; }
     public int getWidth() { return width; }

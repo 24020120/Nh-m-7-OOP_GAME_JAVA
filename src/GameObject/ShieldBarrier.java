@@ -5,11 +5,8 @@ import java.awt.Graphics;
 
 import GameBoard.GameBoard;
 
-/**
- * A temporary barrier that sits at the bottom of the screen and bounces balls.
- */
 public class ShieldBarrier extends GameObject {
-    private int remainingTicks; // lifespan in ticks (60 FPS)
+    private int remainingTicks;
 
     public ShieldBarrier(int height, int durationSeconds) {
         super(0, GameBoard.HEIGHT - height, GameBoard.WIDTH, height);
@@ -23,7 +20,7 @@ public class ShieldBarrier extends GameObject {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(new Color(0, 191, 255, 200)); // a translucent cyan
+        g.setColor(new Color(0, 191, 255, 200));
         g.fillRect(x, y, width, height);
     }
 

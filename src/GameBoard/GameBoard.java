@@ -296,6 +296,13 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     }
 
     public void exitGame() {
+        try {
+            if (gameThread != null) {
+                gameThread.interrupt();
+                gameThread = null;
+            }
+        } catch (Exception ignored) {}
+
         if (mainFrame != null) mainFrame.switchToPanel("MENU");
         else System.exit(0);
     }
@@ -412,6 +419,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
         totalBricks = bricks.size();
 
+        collisionManager = new CollisionManager();
+
         items = new ArrayList<>();
         ballsToRemove.clear();
         shield = null;
@@ -430,6 +439,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         ex.printStackTrace();
     }
 }
+
+    public static boolean hasSavedGame() {
+        return new java.io.File("savegame.dat").exists();
+    }
 
 
 
