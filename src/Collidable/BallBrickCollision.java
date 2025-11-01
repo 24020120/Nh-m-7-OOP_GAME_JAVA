@@ -6,6 +6,7 @@ import Item.Shield;
 import Item.MultiBallItem;
 import Item.ShootingItem;
 import Item.GhostBallItem;
+
 import java.util.Random;
 
 public class BallBrickCollision extends Collidable {
@@ -17,17 +18,20 @@ public class BallBrickCollision extends Collidable {
         for (var brick : board.getBricks()) {
             if (brick.isVisible() && ball.getBounds().intersects(brick.getBounds())) {
 
-                // Nếu bóng ở ghost mode → phá gạch không nảy lại
+                int brickX = brick.getX();
+                int brickY = brick.getY();
+
+                // Nếu bóng đang ở chế độ ghost → chỉ phá gạch, không bật lại
                 if (ball.isGhostMode()) {
                     brick.hit();
-                    board.getScore().addScore(10);
+                    board.getScore().addScore(10, brickX, brickY);
                     board.incrementDestroyedBricks();
                     continue;
                 }
 
                 // Phá gạch bình thường
                 brick.hit();
-                board.getScore().addScore(10);
+                board.getScore().addScore(10, brickX, brickY);
                 board.incrementDestroyedBricks();
 
                 // Xác suất rơi item
@@ -45,14 +49,16 @@ public class BallBrickCollision extends Collidable {
                     board.addItem(new GhostBallItem(spawnX, spawnY));
                 }
 
-                // Xử lý bật lại
-                if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
-                    ball.setDx(-ball.getDx());
-                } else {
-                    ball.setDy(-ball.getDy());
+                // Xử lý bật lại — chỉ thực hiện nếu không ở ghost mode
+                if (!ball.isGhostMode()) {
+                    if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
+                        ball.setDx(-ball.getDx());
+                    } else {
+                        ball.setDy(-ball.getDy());
+                    }
                 }
 
-                break;
+                break; // Chỉ xử lý 1 va chạm tại 1 thời điểm
             }
         }
     }

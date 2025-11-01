@@ -10,7 +10,6 @@ public class GhostBallItem extends Item {
 
     public GhostBallItem(int x, int y) {
         super(x, y);
-        // Load ảnh item GhostBall
         itemImage = new ImageIcon("images/ghostball_item.png").getImage();
     }
 
@@ -18,7 +17,7 @@ public class GhostBallItem extends Item {
     public void applyEffect(GameBoard board) {
         if (board.getBalls().isEmpty()) return;
 
-        // Kích hoạt ghost mode cho TẤT CẢ bóng trong 4 giây
+        // Kích hoạt ghost mode cho tất cả bóng trong 4 giây
         for (var ball : board.getBalls()) {
             ball.activateGhostMode(4);
         }
@@ -31,7 +30,6 @@ public class GhostBallItem extends Item {
         if (itemImage != null) {
             g.drawImage(itemImage, x, y, width, height, null);
         } else {
-            // fallback nếu ảnh lỗi
             g.setColor(Color.MAGENTA);
             g.fillRect(x, y, width, height);
         }

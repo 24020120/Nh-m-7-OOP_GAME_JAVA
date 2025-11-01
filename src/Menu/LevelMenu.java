@@ -7,104 +7,85 @@ import java.awt.*;
 import java.util.List;
 
 public class LevelMenu extends JPanel {
-    // constructor parameter 'mainFrame' is captured by lambdas; no field needed
     private Image backgroundImage;
-    private List<Brick> bricks; // kept for compatibility but will not be used
+    private List<Brick> bricks;
     private int selectedLevel = 0;
 
     public LevelMenu(Main mainFrame) {
-
         backgroundImage = new ImageIcon("images/background.png").getImage();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        add(Box.createVerticalGlue()); // Pushes content to the vertical center
+        add(Box.createVerticalGlue());
 
-        // --- Title ---
-        JLabel title = new JLabel("Select Your Level"); // Changed text
+        JLabel title = new JLabel("Select Your Level");
         title.setFont(new Font("Arial", Font.BOLD, 30));
         title.setForeground(Color.WHITE);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(title);
 
-        add(Box.createRigidArea(new Dimension(0, 30))); // Spacer
+        add(Box.createRigidArea(new Dimension(0, 30)));
 
         JPanel levelButtonPanel = new JPanel();
-        levelButtonPanel.setLayout(new BoxLayout(levelButtonPanel, BoxLayout.X_AXIS)); // Arrange buttons horizontally
-        levelButtonPanel.setOpaque(false); // Make this panel transparent
-        levelButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center this panel horizontally
+        levelButtonPanel.setLayout(new BoxLayout(levelButtonPanel, BoxLayout.X_AXIS));
+        levelButtonPanel.setOpaque(false);
+        levelButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Create the level buttons (boxes)
         JButton level1Button = new JButton("Level 1");
         JButton level2Button = new JButton("Level 2");
         JButton level3Button = new JButton("Level 3");
         JButton level4Button = new JButton("Level 4");
 
-        // Add actions to the buttons
         level1Button.addActionListener(e -> {
-            e.getSource();
-            System.out.println("Selected Level 1");
             selectedLevel = 1;
             mainFrame.switchToPanel("GAMEBOARD");
         });
 
         level2Button.addActionListener(e -> {
-            e.getSource();
-            System.out.println("Selected Level 2");
             selectedLevel = 2;
             mainFrame.switchToPanel("GAMEBOARD");
         });
 
-        
         level3Button.addActionListener(e -> {
-            e.getSource();
-            System.out.println("Start Level 3");
             selectedLevel = 3;
-            //mainFrame.switchToPanel(panelName:"GAMEBOARD");
-             mainFrame.switchToPanel("GAMEBOARD");
-            // e.g., mainFrame.startGame(3);
+            mainFrame.switchToPanel("GAMEBOARD");
         });
-        
+
         level4Button.addActionListener(e -> {
-            e.getSource();
-            System.out.println("Selected Level 4");
             selectedLevel = 4;
             mainFrame.switchToPanel("GAMEBOARD");
         });
-        // Add buttons to the horizontal panel
-        levelButtonPanel.add(Box.createHorizontalGlue()); // Centers buttons
+
+        levelButtonPanel.add(Box.createHorizontalGlue());
         levelButtonPanel.add(level1Button);
-        levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0))); // Space between buttons
+        levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         levelButtonPanel.add(level2Button);
         levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         levelButtonPanel.add(level3Button);
-        //levelButtonPanel.add(Box.createRigidArea(new Dimension(width:20, height:0)));
         levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         levelButtonPanel.add(level4Button);
-        levelButtonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
-        /*
-        levelButtonPanel.add(level3Button);
-        levelButtonPanel.add(Box.createHorizontalGlue()); // Centers buttons
-        */
+        levelButtonPanel.add(Box.createHorizontalGlue());
 
-        // Add the button panel to the main vertical panel
         add(levelButtonPanel);
+        add(Box.createRigidArea(new Dimension(0, 30)));
 
-        add(Box.createRigidArea(new Dimension(0, 30))); // Spacer
+        IconButton returnButton = new IconButton(
+                "images/return_to_menu_normal.png",
+                "images/return_to_menu_hover.png",
+                "images/return_to_menu_pressed.png"
+        );
+        returnButton.setPreferredSize(new Dimension(200, 50));
+        returnButton.setMaximumSize(new Dimension(200, 50));
+        returnButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        returnButton.addActionListener(e -> mainFrame.switchToPanel("MENU"));
 
-        // --- Return Panel ---
-        Return returnPanel = new Return(mainFrame);
-        returnPanel.setOpaque(false); // Make the return panel transparent too
-        add(returnPanel);
-
-        add(Box.createVerticalGlue()); // Pushes content to the vertical center
+        add(returnButton);
+        add(Box.createVerticalGlue());
     }
 
-    // --- FIX: Added paintComponent to draw the background image ---
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (backgroundImage != null) {
-            // Draw the image to fill the entire panel
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }

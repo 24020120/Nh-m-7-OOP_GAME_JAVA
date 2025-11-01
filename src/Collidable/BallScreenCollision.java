@@ -6,28 +6,28 @@ import GameObject.ShieldBarrier;
 
 public class BallScreenCollision extends Collidable {
 
+    private final int BORDER_OFFSET = 57; // Khoảng cách lùi vào 50 pixel
+
     @Override
     public void checkCollision(GameBoard board, Ball ball, int prevX, int prevY) {
-
-
-
-        if (ball.getX() < 0) {
+        // Va chạm với tường TRÁI (lùi vào 50 pixel)
+        if (ball.getX() < BORDER_OFFSET - 17) {
             ball.setDx(Math.abs(ball.getDx()));
-            ball.setX(0);
+            ball.setX(BORDER_OFFSET - 17);
         }
 
-        else if (ball.getX() > (GameBoard.WIDTH - ball.getWidth())) {
+        // Va chạm với tường PHẢI (lùi vào 50 pixel)
+        else if (ball.getX() > (GameBoard.WIDTH - ball.getWidth() - BORDER_OFFSET)) {
             ball.setDx(-Math.abs(ball.getDx()));
-            ball.setX(GameBoard.WIDTH - ball.getWidth());
+            ball.setX(GameBoard.WIDTH - ball.getWidth() - BORDER_OFFSET);
         }
 
-
-        if (ball.getY() < 0) {
+        if (ball.getY() < BORDER_OFFSET - 10) {
             ball.setDy(Math.abs(ball.getDy()));
-            ball.setY(0);
+            ball.setY(BORDER_OFFSET - 10);
         }
 
-
+        // Va chạm với Shield (nếu có)
         ShieldBarrier shield = board.getShield();
         if (shield != null && ball.getBounds().intersects(shield.getBounds()) && ball.getDy() > 0) {
             ball.setDy(-Math.abs(ball.getDy()));
@@ -35,9 +35,8 @@ public class BallScreenCollision extends Collidable {
             return;
         }
 
-
+        // Va chạm với đáy (giữ nguyên)
         if (ball.getY() > GameBoard.HEIGHT - ball.getHeight()) {
-
             board.removeBall(ball);
         }
     }
