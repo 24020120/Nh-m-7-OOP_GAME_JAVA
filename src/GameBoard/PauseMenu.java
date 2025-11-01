@@ -38,11 +38,8 @@ public class PauseMenu {
                 if (resumeButton.contains(p)) {
                     setActive(false);
                 } else if (exitButton.contains(p)) {
-                    if (mainFrame != null) {
-                        mainFrame.switchToPanel("MENU");
-                    } else {
-                        System.exit(0);
-                    }
+                     parent.saveGameState(); 
+                    parent.exitGame();
                 }
             }
 
@@ -68,6 +65,13 @@ public class PauseMenu {
     public boolean isActive() {
         return active;
     }
+    public void exitGame() { 
+        parent.saveGameState();
+        if (mainFrame != null) mainFrame.switchToPanel("MENU");
+        else System.exit(0);
+    }
+
+
 
     public void draw(Graphics2D g2d) {
         if (!active) return;

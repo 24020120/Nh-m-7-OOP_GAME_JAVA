@@ -3,6 +3,10 @@ package GameBoard;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -11,6 +15,7 @@ import Collidable.CollisionManager;
 import Game.Main;
 import GameObject.*;
 import Menu.LevelMenu;
+import Game.GameState;
 import Item.Item;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
@@ -31,6 +36,9 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private ShieldBarrier shield;
     private LevelMenu levelMenu;
     private PauseMenu pauseMenu;
+    private int lives = 3;
+    private int currentLevel = 1;
+
 
     private boolean gameOver = false;
     private boolean gameWin = false;
@@ -331,4 +339,98 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             }
         }
     }
+    
+    public void saveGameState() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savegame.dat"))) {
+            GameState state = new GameState();
+
+            state.score = (score != null) ? score.getScore() : 0;
+            state.lives = this.lives;
+            state.level = this.currentLevel;
+
+        
+            if (player != null)
+                state.paddleX = player.getX();
+            if (balls != null) {
+            for (Ball b : balls) {
+                double[] bs = new double[5];
+                bs[0] = b.getX();
+                bs[1] = b.getY();
+                bs[2] = b.getDX();
+                bs[3] = b.getDY();
+                bs[4] = b.getDiameter();
+                state.balls.add(bs);
+            }
+        }
+
+        
+        if (bricks != null) {
+            for (Brick b : bricks) {
+                if (b.isVisible()) {
+                    state.bricks.add(new int[]{b.getX(), b.getY(), b.getWidth(), b.getHeight()});
+                }
+            }
+        }
+
+            out.writeObject(state);
+          
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+    }
+}
+
+
+    public void loadGameState() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("savegame.dat"))) {
+            GameState state = (GameState) in.readObject();
+
+
+            if (score == null) score = new score();
+                score.setScore(state.score);
+
+            this.lives = state.lives;
+            this.currentLevel = state.level;
+
+       
+            if (player == null) {
+                player = new Paddle((int) state.paddleX, HEIGHT - 55, 100, 30);
+            } else {
+                player.setX((int) state.paddleX);
+            }
+
+        
+            balls = new ArrayList<>();
+            for (double[] bs : state.balls) {
+                balls.add(new Ball((int) bs[0], (int) bs[1], (int) bs[4], bs[2], bs[3]));
+            }
+
+       
+            bricks = new ArrayList<>();
+            for (int[] b : state.bricks) {
+            bricks.add(new Brick(b[0], b[1], b[2], b[3]));
+        }
+        totalBricks = bricks.size();
+
+        items = new ArrayList<>();
+        ballsToRemove.clear();
+        shield = null;
+
+        if (gameThread == null || !gameThread.isAlive()) {
+            gameThread = new Thread(this);
+            gameThread.start();
+        }
+
+        pauseMenu.setActive(false);
+        gameOver = false;
+        gameWin = false;
+        repaint();
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+}
+
+
+
 }

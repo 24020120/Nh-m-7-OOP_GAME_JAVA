@@ -59,4 +59,16 @@ public class Ball extends GameObject {
     public boolean isGhostMode() {
         return ghostMode;
     }
+    public double getDX() {
+    return dx;
+    }
+
+    public double getDY() {
+        return dy;
+    }
+
+    public int getDiameter() {
+        return width;
+    }
+
 }

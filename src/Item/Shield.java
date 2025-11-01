@@ -13,7 +13,7 @@ public class Shield extends Item {
 
     private static final int shieldDurationSeconds = 10;
     private static final int shieldHeight = 30;
-    private Image itemImage; // THÊM: Biến hình ảnh
+    private Image itemImage;
 
     /**
      * Hàm khởi tạo cho vật phẩm Shield.
@@ -25,7 +25,6 @@ public class Shield extends Item {
         this.width = 20;
         this.height = 20;
 
-        // THÊM: Load hình ảnh khiên
         try {
             itemImage = new ImageIcon("images/shield_item.png").getImage();
         } catch (Exception e) {
@@ -44,17 +43,15 @@ public class Shield extends Item {
     }
 
     /**
-     * Vẽ vật phẩm Shield (khi nó đang rơi).
+     * Vẽ vật phẩm Shield
      */
     @Override
     public void draw(Graphics g) {
         if (!isActive()) return;
 
-        // SỬA: Vẽ hình ảnh thay vì chữ "S"
         if (itemImage != null) {
             g.drawImage(itemImage, x, y, width, height, null);
         } else {
-            // Fallback: vẽ hình chữ nhật và chữ nếu không có ảnh
             g.setColor(Color.MAGENTA);
             g.fillRect(x, y, width, height);
             g.setColor(Color.WHITE);

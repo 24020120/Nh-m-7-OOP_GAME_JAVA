@@ -22,7 +22,6 @@ public class Instruct extends JPanel {
 
         imageInstruct = new ImageIcon("images/instruction.png").getImage();
 
-        // THAY ĐỔI: Sử dụng IconButton thay vì Return panel
         IconButton returnButton = new IconButton(
                 "images/return_to_menu_normal.png",
                 "images/return_to_menu_hover.png",

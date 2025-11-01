@@ -6,23 +6,23 @@ import java.awt.*;
 
 public class Menu extends JPanel {
     private Image backgroundImage;
-    private Image titleImage; // Hình ảnh tiêu đề thay thế chữ
+    private Image titleImage;
 
     public Menu(Main mainFrame) {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         backgroundImage = new ImageIcon("images/background.png").getImage();
-        titleImage = new ImageIcon("images/arkanoid_title.png").getImage(); // Thêm hình tiêu đề
+        titleImage = new ImageIcon("images/arkanoid_title.png").getImage();
 
         add(Box.createVerticalGlue());
 
-        // Thay thế JLabel bằng JPanel để hiển thị hình ảnh tiêu đề
+       
         JPanel titlePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (titleImage != null) {
-                    // Vẽ hình tiêu đề căn giữa
+                   
                     int imgWidth = titleImage.getWidth(this);
                     int imgHeight = titleImage.getHeight(this);
                     int x = (getWidth() - imgWidth) / 2;
@@ -37,9 +37,8 @@ public class Menu extends JPanel {
         titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(titlePanel);
 
-        add(Box.createRigidArea(new Dimension(0, 30))); // Giảm khoảng cách xuống
+        add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // Sử dụng IconButton thay vì JButton thông thường
         IconButton playButton = new IconButton(
                 "images/start_game_normal.png",
                 "images/start_game_hover.png",

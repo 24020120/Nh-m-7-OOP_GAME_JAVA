@@ -32,10 +32,8 @@ public class Main extends JFrame {
         GameOver gameOverPanel = new GameOver(this);
         LevelMenu levelMenuPanel = new LevelMenu(this);
 
-        // Liên kết LevelMenu với GameBoard
         gameBoardPanel.setLevelMenu(levelMenuPanel);
 
-        // Thêm các panel vào layout
         mainPanel.add(gameBoardPanel, "GAMEBOARD");
         mainPanel.add(menuPanel, "MENU");
         mainPanel.add(instructPanel, "INSTRUCTIONS");
@@ -45,7 +43,7 @@ public class Main extends JFrame {
         mainPanel.add(levelMenuPanel, "LEVELMENU");
 
         add(mainPanel);
-        switchToPanel("MENU"); // Bắt đầu ở màn hình Menu
+        switchToPanel("MENU");
     }
 
     public void switchToPanel(String panelName) {

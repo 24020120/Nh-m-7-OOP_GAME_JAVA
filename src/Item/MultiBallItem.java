@@ -16,8 +16,6 @@ public class MultiBallItem extends Item {
         this.width = 28;
         this.height = 28;
 
-        // 🟢 Load ảnh item từ thư mục resources
-        // Đảm bảo đường dẫn này đúng vị trí ảnh trong project của bạn
         itemImage = new ImageIcon("images/MultiBallItem.png").getImage();
     }
 

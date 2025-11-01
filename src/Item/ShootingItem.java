@@ -10,15 +10,14 @@ import javax.swing.ImageIcon;
  */
 public class ShootingItem extends Item {
 
-    private static final int SHOOTING_DURATION = 10; // 10 giây
-    private Image itemImage; // THÊM: Biến hình ảnh
+    private static final int SHOOTING_DURATION = 10; 
+    private Image itemImage;
 
     public ShootingItem(int x, int y) {
         super(x, y);
         this.width = 20;
         this.height = 20;
 
-        // THÊM: Load hình ảnh súng
         try {
             itemImage = new ImageIcon("images/gun_item.png").getImage();
         } catch (Exception e) {
@@ -38,11 +37,10 @@ public class ShootingItem extends Item {
     public void draw(Graphics g) {
         if (!isActive()) return;
 
-        // SỬA: Vẽ hình ảnh thay vì chữ "G"
         if (itemImage != null) {
             g.drawImage(itemImage, x, y, width, height, null);
         } else {
-            // Fallback: vẽ hình chữ nhật và chữ nếu không có ảnh
+    
             g.setColor(Color.YELLOW);
             g.fillRect(x, y, width, height);
             g.setColor(Color.BLACK);

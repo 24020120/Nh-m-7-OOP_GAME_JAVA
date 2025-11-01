@@ -3,6 +3,10 @@ package GameBoard;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -11,6 +15,7 @@ import Collidable.CollisionManager;
 import Game.Main;
 import GameObject.*;
 import Menu.LevelMenu;
+import Game.GameState;
 import Item.Item;
 
 public class GameBoard extends JPanel implements Runnable, KeyListener {
@@ -38,8 +43,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private int destroyedBricksCount = 0;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
-    
-    // Background
+
     private Image backgroundImage;
 
     public GameBoard(Main mainFrame) {
@@ -50,6 +54,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         addKeyListener(this);
         loadBackgroundImage();
         pauseMenu = new PauseMenu(mainFrame, this);
+       
+        addMouseListener(pauseMenu.getMouseAdapter());
         addMouseMotionListener(pauseMenu.getMouseAdapter());
 
     }
@@ -111,7 +117,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
     }
 
-   @Override
+    @Override
     public void run() {
         long lastTime = System.nanoTime();
         final double targetTick = 60.0;
@@ -123,22 +129,21 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             delta += (now - lastTime) / nsPerTick;
             lastTime = now;
 
-        while (delta >= 1) {
-            // 🔸 Nếu đang pause thì bỏ qua update
-            if (!pauseMenu.isActive() && !gameOver && !gameWin) {
-                update();
+            while (delta >= 1) {
+                if (!pauseMenu.isActive() && !gameOver && !gameWin) {
+                    update();
+                }
+                delta--;
             }
-            delta--;
-        }
 
-        repaint();
+            repaint();
 
-        try {
-            Thread.sleep((long) (DELAY / 1.5));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return;
-        }
+            try {
+                Thread.sleep((long) (DELAY / 1.5));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
 
@@ -196,6 +201,8 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         if (balls.isEmpty() && !gameWin) {
             setGameOver(true);
         }
+        if (pauseMenu != null && pauseMenu.isActive()) return;
+
     }
 
     @Override
@@ -211,25 +218,10 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
         }
 
         player.draw(g);
-
-        for (Ball b : balls) {
-            b.draw(g);
-        }
-
-        for (Brick brick : bricks) {
-            brick.draw(g);
-        }
-
-        if (items != null) {
-            for (Item it : items) {
-                it.draw(g);
-            }
-        }
-
-        if (shield != null) {
-            shield.draw(g);
-        }
-
+        for (Ball b : balls) b.draw(g);
+        for (Brick brick : bricks) brick.draw(g);
+        if (items != null) for (Item it : items) it.draw(g);
+        if (shield != null) shield.draw(g);
         score.draw(g);
 
         if (gameOver) {
@@ -248,110 +240,85 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
             g.drawString("Press SPACE to restart", WIDTH / 2 - 140, HEIGHT / 2 + 60);
         }
 
-        Toolkit.getDefaultToolkit().sync();
         pauseMenu.draw((Graphics2D) g);
+
+        Toolkit.getDefaultToolkit().sync();
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (pauseMenu.isActive()) {
+            if (e.getKeyCode() == KeyEvent.VK_P || e.getKeyCode() == KeyEvent.VK_R) {
+                togglePause();
+            }
+            return;
+        }
+
         if (!gameOver && !gameWin && player != null) {
-            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+            if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A)
                 leftPressed = true;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D)
                 rightPressed = true;
-            }
         }
 
         if ((gameOver || gameWin) && e.getKeyCode() == KeyEvent.VK_SPACE) {
             initGame();
         }
-        if (e.getKeyCode() == KeyEvent.VK_P) {
-             pauseMenu.setActive(!pauseMenu.isActive());
-             repaint();
-}
 
+        if (e.getKeyCode() == KeyEvent.VK_P) togglePause();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-            leftPressed = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-            rightPressed = false;
-        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) leftPressed = false;
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) rightPressed = false;
     }
 
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    public List<Ball> getBalls() {
-        return balls;
+    private void togglePause() {
+        boolean newState = !pauseMenu.isActive();
+        pauseMenu.setActive(newState);
+        leftPressed = false;
+        rightPressed = false;
+        repaint();
     }
 
-    public void addBall(Ball b) {
-        if (this.balls != null) {
-            this.balls.add(b);
-        }
+    public void resumeGame() {
+        pauseMenu.setActive(false);
+        leftPressed = false;
+        rightPressed = false;
+        requestFocusInWindow();
     }
 
-    public void removeBall(Ball b) {
-        if (this.balls != null) {
-            ballsToRemove.add(b);
-        }
+    public void exitGame() {
+        if (mainFrame != null) mainFrame.switchToPanel("MENU");
+        else System.exit(0);
     }
 
-    public Paddle getPlayer() {
-        return player;
-    }
-
-    public List<Brick> getBricks() {
-        return bricks;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void addItem(Item item) {
-        if (items == null) items = new ArrayList<>();
-        items.add(item);
-    }
-
-    public score getScore() {
-        return score;
-    }
-
-    public ShieldBarrier getShield() {
-        return shield;
-    }
-
-    public void setShield(ShieldBarrier shield) {
-        this.shield = shield;
-    }
-
+    public List<Ball> getBalls() { return balls; }
+    public void addBall(Ball b) { if (this.balls != null) this.balls.add(b); }
+    public void removeBall(Ball b) { if (this.balls != null) ballsToRemove.add(b); }
+    public Paddle getPlayer() { return player; }
+    public List<Brick> getBricks() { return bricks; }
+    public List<Item> getItems() { return items; }
+    public void addItem(Item item) { if (items == null) items = new ArrayList<>(); items.add(item); }
+    public score getScore() { return score; }
+    public ShieldBarrier getShield() { return shield; }
+    public void setShield(ShieldBarrier shield) { this.shield = shield; }
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
-        if (gameOver && mainFrame != null) {
-            mainFrame.switchToPanel("GAMEOVER");
-        }
+        if (gameOver && mainFrame != null) mainFrame.switchToPanel("GAMEOVER");
     }
+    public void incrementDestroyedBricks() { destroyedBricksCount++; }
 
-    public void incrementDestroyedBricks() {
-        destroyedBricksCount++;
-    }
-
-    // Truyền thêm toạ độ brick để hiển thị hiệu ứng +10
     private void checkBulletCollisions() {
         if (player == null || bricks == null) return;
-
         List<Bullet> bullets = player.getBullets();
         Iterator<Bullet> bulletIterator = bullets.iterator();
-
         while (bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
-
             Iterator<Brick> brickIterator = bricks.iterator();
             while (brickIterator.hasNext()) {
                 Brick brick = brickIterator.next();
@@ -360,15 +327,63 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
                         bullet.getX() + bullet.getWidth() > brick.getX() &&
                         bullet.getY() < brick.getY() + brick.getHeight() &&
                         bullet.getY() + bullet.getHeight() > brick.getY()) {
-
                     brick.hit();
                     bullet.setActive(false);
                     incrementDestroyedBricks();
-                    score.addScore(10, brick.getX(), brick.getY()); //
-
+                    score.addScore(10, brick.getX(), brick.getY());
                     break;
                 }
             }
         }
     }
+    // Lưu trạng thái hiện tại
+    public void saveGameState() {
+    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savegame.dat"))) {
+        GameState state = new GameState();
+        state.score = score;
+        state.lives = lives;
+        state.level = currentLevel;
+        state.ballX = ball.getX();
+        state.ballY = ball.getY();
+        state.ballDX = ball.getDX();
+        state.ballDY = ball.getDY();
+        state.paddleX = paddle.getX();
+
+        // ví dụ lưu bricks còn sống
+        for (Brick b : bricks) {
+            if (!b.isDestroyed()) {
+                state.bricks.add(new int[]{b.getX(), b.getY(), b.getWidth(), b.getHeight()});
+            }
+        }
+
+        out.writeObject(state);
+        System.out.println("Game saved!");
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
+}
+
+// Tải trạng thái cũ
+    public void loadGameState() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("savegame.dat"))) {
+            GameState state = (GameState) in.readObject();
+            score = state.score;
+            lives = state.lives;
+            currentLevel = state.level;
+            ball.setPosition(state.ballX, state.ballY);
+            ball.setSpeed(state.ballDX, state.ballDY);
+            paddle.setX(state.paddleX);
+
+        // phục hồi bricks
+            bricks.clear();
+            for (int[] b : state.bricks) {
+                bricks.add(new Brick(b[0], b[1], b[2], b[3]));
+            }
+
+            System.out.println("Game loaded!");
+         } catch (Exception ex) {
+                ex.printStackTrace();
+        }
+    }
+
 }
