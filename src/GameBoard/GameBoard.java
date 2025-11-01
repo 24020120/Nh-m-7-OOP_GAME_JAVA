@@ -243,7 +243,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (pauseMenu.isActive()) {
-            // Khi đang pause, chỉ nhận P hoặc R
             if (e.getKeyCode() == KeyEvent.VK_P || e.getKeyCode() == KeyEvent.VK_R) {
                 togglePause();
             }
@@ -273,7 +272,6 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    // 🔸 Hàm chuyển trạng thái pause
     private void togglePause() {
         boolean newState = !pauseMenu.isActive();
         pauseMenu.setActive(newState);
