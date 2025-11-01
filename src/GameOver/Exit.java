@@ -11,13 +11,13 @@ public class Exit {
     private BufferedImage exitButton;
 
     public Exit() {
-        this(350, 250, 100, 30);
+        this(300, 350, 200, 60); // Kích thước mới 200x60
     }
 
     public Exit(int x, int y, int width, int height) {
         exitBound = new Rectangle(x, y, width, height);
         try {
-            exitButton = ImageIO.read(new File("images/ExitButton.png"));
+            exitButton = ImageIO.read(new File("images/exit_button.png")); // File hình ảnh mới
         } catch (IOException e) {
             e.printStackTrace();
             exitButton = null;
@@ -27,12 +27,19 @@ public class Exit {
     protected void draw(Graphics g) {
         if (exitButton != null) {
             g.drawImage(
-                exitButton, 
-                exitBound.x,
-                exitBound.y, 
-                exitBound.width,
-                exitBound.height,
-                null);
+                    exitButton,
+                    exitBound.x,
+                    exitBound.y,
+                    exitBound.width,
+                    exitBound.height,
+                    null);
+        } else {
+            // Fallback: vẽ nút cơ bản nếu không có hình
+            g.setColor(Color.RED);
+            g.fillRect(exitBound.x, exitBound.y, exitBound.width, exitBound.height);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString("EXIT", exitBound.x + 70, exitBound.y + 35);
         }
     }
 
