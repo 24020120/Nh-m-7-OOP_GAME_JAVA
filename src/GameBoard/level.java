@@ -51,6 +51,47 @@ public class Level {
                 }
         };
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+                for (int i = 0; i < BRICK_X; i++) {
+                    for (int j = 0; j < BRICK_Y; j++) {
+                        // (i + j) % 2 -> xen kẽ loại gạch 0 và 1
+                        bricks.add(new Brick(
+                                startX + i * (BRICK_WIDTH + brickSpacing),
+                                START_Y_OFFSET + j * (BRICK_HEIGHT + brickSpacing),
+                                BRICK_WIDTH, BRICK_HEIGHT,
+                                (i + j) % 2));
+                    }
+                }
+
+                break;
+            // Future levels can be added here with different layouts
+            case 2:
+                final int BRICK_X2 = 12;
+                final int BRICK_Y2 = 5;
+                final int BRICK_WIDTH2 = 60;
+                final int BRICK_HEIGHT2 = 20;
+                final int START_Y_OFFSET2 = 80;
+                final int brickSpacing2 = 3;
+
+                int totalBrickWidth2 = BRICK_X2 * (BRICK_WIDTH2 + brickSpacing2);
+                int startX2 = (boardWidth - totalBrickWidth2) / 2;
+
+                for (int i = 0; i < BRICK_X2; i++) {
+                    for (int j = 0; j < BRICK_Y2; j++) {
+                        bricks.add(new Brick(
+                                startX2 + i * (BRICK_WIDTH2 + brickSpacing2),
+                                START_Y_OFFSET2 + j * (BRICK_HEIGHT2 + brickSpacing2),
+                                BRICK_WIDTH2, BRICK_HEIGHT2,
+                                (i + j) % 2));
+                    }
+                }
+
+                break;
+=======
+       
+>>>>>>> 3dbf6617d898df83c8a813bfff90d0b871a9e758
         int level = Math.min(Math.max(1, levelNumber), layouts.length);
         int[] layout = layouts[level - 1];
 
@@ -69,6 +110,7 @@ public class Level {
                     bricks.add(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, (row + col) % 2));
                 }
             }
+>>>>>>> 2aa8d091d2a4d1486ab9e30b1cba7fe81896d396
         }
 
         return bricks;
