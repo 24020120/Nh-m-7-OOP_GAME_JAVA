@@ -1,10 +1,13 @@
 package Collidable;
 
+import Game.SoundManager;
 import GameBoard.GameBoard;
 import GameObject.Ball;
 import Item.Shield;
 import Item.MultiBallItem;
-import Item.ShootingItem; // THÊM IMPORT
+import Item.ShootingItem;
+import Item.GhostBallItem;
+
 import java.util.Random;
 
 public class BallBrickCollision extends Collidable {
@@ -16,28 +19,45 @@ public class BallBrickCollision extends Collidable {
         for (var brick : board.getBricks()) {
             if (brick.isVisible() && ball.getBounds().intersects(brick.getBounds())) {
 
+                int brickX = brick.getX();
+                int brickY = brick.getY();
+
+                if (ball.isGhostMode()) {
+                    brick.hit();
+                    board.getScore().addScore(10, brickX, brickY);
+                    board.incrementDestroyedBricks();
+                    continue;
+                }
+
+              
                 brick.hit();
-                board.getScore().addScore(10);
+                board.getScore().addScore(10, brickX, brickY);
                 board.incrementDestroyedBricks();
 
-                // Xử lý rơi item với xác suất
+                SoundManager.getInstance().playSound("brick_break");
+
+    
                 double chance = rand.nextDouble();
                 int spawnX = brick.getX() + brick.getWidth() / 2 - 10;
                 int spawnY = brick.getY();
 
-                if (chance < 0.10) { // 10% chance Shield
+                if (chance < 0.10) {
                     board.addItem(new Shield(spawnX, spawnY));
-                } else if (chance < 0.20) { // 10% chance MultiBall
+                } else if (chance < 0.15) {
                     board.addItem(new MultiBallItem(spawnX, spawnY));
-                } else if (chance < 0.30) { // 10% chance ShootingItem (MỚI)
+                } else if (chance < 0.20) {
                     board.addItem(new ShootingItem(spawnX, spawnY));
+                } else if (chance < 0.25) {
+                    board.addItem(new GhostBallItem(spawnX, spawnY));
                 }
 
-                // Xử lý bounce
-                if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
-                    ball.setDx(-ball.getDx());
-                } else {
-                    ball.setDy(-ball.getDy());
+              
+                if (!ball.isGhostMode()) {
+                    if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
+                        ball.setDx(-ball.getDx());
+                    } else {
+                        ball.setDy(-ball.getDy());
+                    }
                 }
 
                 break;

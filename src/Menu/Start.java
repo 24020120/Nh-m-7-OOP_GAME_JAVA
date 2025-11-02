@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class Start extends JPanel {
-    // constructor parameter 'gameFrame' will be captured by the mouse listener; no field needed
     private BufferedImage startBG;
 
     public Start(Main gameFrame) {
@@ -23,7 +22,6 @@ public class Start extends JPanel {
             startBG = createDefaultBackground();
         }
 
-        // Khi click vào màn hình thì chuyển sang MENU
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

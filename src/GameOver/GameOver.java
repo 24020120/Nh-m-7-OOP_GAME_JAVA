@@ -34,10 +34,11 @@ public class GameOver extends JPanel{
                 int y = e.getY();
 
                 if (exitButton.isClicked(x, y)) {
+                    clearSavedGameFile();
                     System.exit(0);
                 }
                 if (returnButton.isClicked(x, y)) {
-                    // If we have a Main frame, switch back to menu. Otherwise ignore.
+                    clearSavedGameFile();
                     if (mainFrame != null) {
                         mainFrame.switchToPanel("MENU");
                     }
@@ -46,7 +47,13 @@ public class GameOver extends JPanel{
         });
     }
 
-    // No-arg constructor for legacy usage
+    private void clearSavedGameFile() {
+        try {
+            java.io.File f = new java.io.File("savegame.dat");
+            if (f.exists()) f.delete();
+        } catch (Exception ignored) {}
+    }
+
     public GameOver() {
         this(null);
     }

@@ -12,7 +12,7 @@ public class Exit extends JPanel {
 
         backgroundImage = new ImageIcon("images/background.png").getImage();
 
-        // setLayout(new GridBagLayout());
+        
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;

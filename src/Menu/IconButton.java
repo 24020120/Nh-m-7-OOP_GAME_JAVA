@@ -20,7 +20,6 @@ public class IconButton extends JButton {
         setFocusPainted(false);
         enableEvents(AWTEvent.MOUSE_EVENT_MASK);
 
-        // set the default icon
         setIcon(new ImageIcon(normal));
     }
 

@@ -1,5 +1,7 @@
 package GameObject;
 
+import Game.SoundManager;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -14,11 +16,12 @@ public class Paddle extends GameObject {
 
     private List<Bullet> bullets;
     private long lastShotTime = 0;
-    private final long SHOT_DELAY = 200; // milliseconds giữa các lần bắn
+    private final long SHOT_DELAY = 200;
 
-    // Thêm thuộc tính cho auto shoot
     private boolean autoShootEnabled = false;
     private long autoShootEndTime = 0;
+
+    private final int BORDER_OFFSET = 50;
 
     static {
         try {
@@ -35,17 +38,14 @@ public class Paddle extends GameObject {
 
     @Override
     public void update() {
-        // Cập nhật đạn
         bullets.removeIf(bullet -> !bullet.isActive());
         for (Bullet bullet : bullets) {
             bullet.update();
         }
 
-        // Xử lý bắn tự động
         if (autoShootEnabled) {
             autoShoot();
 
-            // Kiểm tra hết thời gian auto shoot
             if (System.currentTimeMillis() >= autoShootEndTime) {
                 autoShootEnabled = false;
             }
@@ -61,7 +61,6 @@ public class Paddle extends GameObject {
             g.fillRect(x, y, width, height);
         }
 
-        // Vẽ đạn
         for (Bullet bullet : bullets) {
             bullet.draw(g);
         }
@@ -69,22 +68,11 @@ public class Paddle extends GameObject {
 
     public void move(int direction) {
         x += direction * MOVE_SPEED;
-        if (x < 0) x = 0;
-        if (x > 800 - width) x = 800 - width;
+
+        if (x < BORDER_OFFSET) x = BORDER_OFFSET;
+        if (x > 800 - width - BORDER_OFFSET) x = 800 - width - BORDER_OFFSET;
     }
 
-    // Phương thức bắn thủ công (giữ Space) - GIỮ LẠI ĐỂ TƯƠNG THÍCH
-    public void shoot() {
-        if (!autoShootEnabled) { // Chỉ cho bắn thủ công khi không có auto shoot
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastShotTime >= SHOT_DELAY) {
-                createBullet();
-                lastShotTime = currentTime;
-            }
-        }
-    }
-
-    // Phương thức bắn tự động
     private void autoShoot() {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastShotTime >= SHOT_DELAY) {
@@ -99,9 +87,20 @@ public class Paddle extends GameObject {
         int bulletX = x + (width - bulletWidth) / 2;
         int bulletY = y - bulletHeight;
         bullets.add(new Bullet(bulletX, bulletY, bulletWidth, bulletHeight));
+
+        SoundManager.getInstance().playSound("shoot");
     }
 
-    // Kích hoạt chế độ bắn tự động
+    public void shoot() {
+        if (!autoShootEnabled) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastShotTime >= SHOT_DELAY) {
+                createBullet();
+                lastShotTime = currentTime;
+            }
+        }
+    }
+
     public void activateAutoShoot(int durationSeconds) {
         this.autoShootEnabled = true;
         this.autoShootEndTime = System.currentTimeMillis() + (durationSeconds * 1000);
