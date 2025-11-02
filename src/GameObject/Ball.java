@@ -25,7 +25,6 @@ public class Ball extends GameObject {
         x += dx;
         y += dy;
 
-        // ⏰ Tự tắt ghost mode khi hết thời gian
         if (ghostMode && System.currentTimeMillis() > ghostEndTime) {
             ghostMode = false;
         }

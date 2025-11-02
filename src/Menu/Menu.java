@@ -45,9 +45,9 @@ public class Menu extends JPanel {
         add(Box.createRigidArea(new Dimension(0, 30)));
 
         IconButton continueButton = new IconButton(
-                "images/continue_basic.png",      // ảnh bình thường
-                "images/continue_hover.png",      // ảnh khi hover
-                "images/continue_pressed.png"     // ảnh khi nhấn
+                "images/continue_basic.png",
+                "images/continue_hover.png",
+                "images/continue_pressed.png"
         );
         continueButton.setPreferredSize(new Dimension(250, 50));
         continueButton.setMaximumSize(new Dimension(250, 50));

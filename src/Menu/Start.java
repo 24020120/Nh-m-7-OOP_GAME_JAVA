@@ -22,7 +22,6 @@ public class Start extends JPanel {
             startBG = createDefaultBackground();
         }
 
-        // Khi click vào màn hình thì chuyển sang MENU
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

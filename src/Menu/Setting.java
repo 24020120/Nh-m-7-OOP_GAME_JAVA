@@ -25,7 +25,6 @@ public class Setting extends JPanel {
 
         add(Box.createRigidArea(new Dimension(0, 30)));
 
-        // THAY ĐỔI: Sử dụng IconButton thay vì Return panel
         IconButton returnButton = new IconButton(
                 "images/return_to_menu_normal.png",
                 "images/return_to_menu_hover.png",

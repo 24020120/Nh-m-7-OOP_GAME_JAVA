@@ -6,11 +6,11 @@ import java.awt.*;
 import javax.swing.ImageIcon;
 
 /**
- * Item bắn đạn tự động. Khi nhặt, paddle sẽ tự động bắn đạn trong 10 giây.
+ * Item bắn đạn tự động. Khi nhặt, paddle sẽ tự động bắn đạn trong 4 giây
  */
 public class ShootingItem extends Item {
 
-    private static final int SHOOTING_DURATION = 10; 
+    private static final int SHOOTING_DURATION = 4; 
     private Image itemImage;
 
     public ShootingItem(int x, int y) {

@@ -28,7 +28,7 @@ public class SoundManager {
     }
 
     private void loadSounds() {
-        // Load sound effects - tạo thư mục sounds/ và thêm file âm thanh
+      
         try {
             loadSound("ball_bounce", "sounds/bounce.wav");
             loadSound("brick_break", "sounds/brick_break.wav");
@@ -37,7 +37,7 @@ public class SoundManager {
             loadSound("level_win", "sounds/level_win.wav");
             loadSound("shoot", "sounds/shoot.wav");
 
-            // Load music
+    
             loadMusic("background", "sounds/background_music.wav");
             loadMusic("menu", "sounds/menu_music.wav");
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class SoundManager {
             clip.open(audioInputStream);
             soundClips.put(name, clip);
         } catch (Exception e) {
-            System.out.println("Could not load sound: " + filePath);
+            System.out.println("Không thể load âm thanh: " + filePath);
         }
     }
 
@@ -63,7 +63,7 @@ public class SoundManager {
             clip.open(audioInputStream);
             musicClips.put(name, clip);
         } catch (Exception e) {
-            System.out.println("Could not load music: " + filePath);
+            System.out.println("Không thể load âm nhạc: " + filePath);
         }
     }
 
@@ -72,13 +72,12 @@ public class SoundManager {
 
         Clip clip = soundClips.get(name);
         if (clip != null) {
-            // Stop if already playing and restart
             if (clip.isRunning()) {
                 clip.stop();
             }
             clip.setFramePosition(0);
 
-            // Set volume
+        
             setClipVolume(clip, soundVolume);
             clip.start();
         }
@@ -127,7 +126,7 @@ public class SoundManager {
         }
     }
 
-    // Volume control methods
+
     public void setSoundVolume(float volume) {
         this.soundVolume = Math.max(0.0f, Math.min(1.0f, volume));
     }
@@ -135,7 +134,6 @@ public class SoundManager {
     public void setMusicVolume(float volume) {
         this.musicVolume = Math.max(0.0f, Math.min(1.0f, volume));
 
-        // Update currently playing music volume
         for (Clip clip : musicClips.values()) {
             if (clip.isRunning()) {
                 setClipVolume(clip, musicVolume);

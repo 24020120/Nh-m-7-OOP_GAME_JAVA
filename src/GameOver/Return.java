@@ -11,13 +11,13 @@ public class Return {
     private BufferedImage returnButton;
 
     public Return() {
-        this(300, 450, 200, 60); // Kích thước mới 200x60
+        this(300, 450, 200, 60);
     }
 
     public Return(int x, int y, int width, int height) {
         returnBound = new Rectangle(x, y, width, height);
         try {
-            returnButton = ImageIO.read(new File("images/return_button.png")); // File hình ảnh mới
+            returnButton = ImageIO.read(new File("images/return_button.png"));
         } catch (IOException e) {
             e.printStackTrace();
             returnButton = null;
@@ -34,7 +34,6 @@ public class Return {
                     returnBound.height,
                     null);
         } else {
-            // Fallback: vẽ nút cơ bản nếu không có hình
             g.setColor(Color.BLUE);
             g.fillRect(returnBound.x, returnBound.y, returnBound.width, returnBound.height);
             g.setColor(Color.WHITE);

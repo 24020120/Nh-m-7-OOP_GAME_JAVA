@@ -8,7 +8,7 @@ import java.awt.Color;
 public abstract class Item {
     protected int x, y, width = 20, height = 20;
     protected boolean active = true;
-    protected Color color = Color.WHITE; // Thêm dòng này
+    protected Color color = Color.WHITE;
 
     public Item(int x, int y) {
         this.x = x;
@@ -19,7 +19,7 @@ public abstract class Item {
     public abstract void draw(Graphics g);
 
     public void update() {
-        y += 2; // tốc độ rơi
+        y += 2;
         if (y > GameBoard.HEIGHT) {
             active = false;
         }

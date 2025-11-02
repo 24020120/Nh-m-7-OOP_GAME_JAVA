@@ -11,7 +11,6 @@ public class Brick extends GameObject {
     private boolean isVisible = true;
     private BufferedImage brickImage;
 
-    // Mảng chứa hình ảnh các loại gạch
     private static BufferedImage[] brickImages;
 
     static {
@@ -21,11 +20,10 @@ public class Brick extends GameObject {
                     ImageIO.read(new File("images/brick2.png"))
             };
         } catch (IOException e) {
-            brickImages = new BufferedImage[0]; // fallback rỗng
+            brickImages = new BufferedImage[0];
         }
     }
 
-    //  Giữ constructor có typeIndex (linh hoạt cho nhiều loại gạch)
     public Brick(int x, int y, int width, int height, int typeIndex) {
         super(x, y, width, height);
         if (brickImages.length > 0) {
@@ -33,14 +31,13 @@ public class Brick extends GameObject {
         }
     }
 
-    //  Thêm constructor đơn giản cho backward compatibility
     public Brick(int x, int y, int width, int height) {
         this(x, y, width, height, 0);
     }
 
     @Override
     public void update() {
-        // Gạch không di chuyển
+        
     }
 
     @Override

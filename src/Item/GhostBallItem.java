@@ -17,7 +17,6 @@ public class GhostBallItem extends Item {
     public void applyEffect(GameBoard board) {
         if (board.getBalls().isEmpty()) return;
 
-        // Kích hoạt ghost mode cho tất cả bóng trong 4 giây
         for (var ball : board.getBalls()) {
             ball.activateGhostMode(4);
         }

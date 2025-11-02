@@ -21,7 +21,6 @@ public class Paddle extends GameObject {
     private boolean autoShootEnabled = false;
     private long autoShootEndTime = 0;
 
-    // THÊM: Biến để giới hạn di chuyển theo tường mới
     private final int BORDER_OFFSET = 50;
 
     static {
@@ -70,7 +69,6 @@ public class Paddle extends GameObject {
     public void move(int direction) {
         x += direction * MOVE_SPEED;
 
-        // SỬA: Giới hạn di chuyển theo tường mới (lùi vào 50 pixel mỗi bên)
         if (x < BORDER_OFFSET) x = BORDER_OFFSET;
         if (x > 800 - width - BORDER_OFFSET) x = 800 - width - BORDER_OFFSET;
     }

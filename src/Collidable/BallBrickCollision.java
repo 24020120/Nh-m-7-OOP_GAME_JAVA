@@ -22,7 +22,6 @@ public class BallBrickCollision extends Collidable {
                 int brickX = brick.getX();
                 int brickY = brick.getY();
 
-                // Nếu bóng đang ở chế độ ghost → chỉ phá gạch, không bật lại
                 if (ball.isGhostMode()) {
                     brick.hit();
                     board.getScore().addScore(10, brickX, brickY);
@@ -30,29 +29,29 @@ public class BallBrickCollision extends Collidable {
                     continue;
                 }
 
-                // Phá gạch bình thường
+              
                 brick.hit();
                 board.getScore().addScore(10, brickX, brickY);
                 board.incrementDestroyedBricks();
 
                 SoundManager.getInstance().playSound("brick_break");
 
-                // Xác suất rơi item
+    
                 double chance = rand.nextDouble();
                 int spawnX = brick.getX() + brick.getWidth() / 2 - 10;
                 int spawnY = brick.getY();
 
                 if (chance < 0.10) {
                     board.addItem(new Shield(spawnX, spawnY));
-                } else if (chance < 0.20) {
+                } else if (chance < 0.15) {
                     board.addItem(new MultiBallItem(spawnX, spawnY));
-                } else if (chance < 0.30) {
+                } else if (chance < 0.20) {
                     board.addItem(new ShootingItem(spawnX, spawnY));
-                } else if (chance < 0.40) {
+                } else if (chance < 0.25) {
                     board.addItem(new GhostBallItem(spawnX, spawnY));
                 }
 
-                // Xử lý bật lại — chỉ thực hiện nếu không ở ghost mode
+              
                 if (!ball.isGhostMode()) {
                     if (prevX + ball.getWidth() <= brick.getX() || prevX >= brick.getX() + brick.getWidth()) {
                         ball.setDx(-ball.getDx());
@@ -61,7 +60,7 @@ public class BallBrickCollision extends Collidable {
                     }
                 }
 
-                break; // Chỉ xử lý 1 va chạm tại 1 thời điểm
+                break;
             }
         }
     }
