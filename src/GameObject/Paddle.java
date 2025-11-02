@@ -1,5 +1,7 @@
 package GameObject;
 
+import Game.SoundManager;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -87,6 +89,8 @@ public class Paddle extends GameObject {
         int bulletX = x + (width - bulletWidth) / 2;
         int bulletY = y - bulletHeight;
         bullets.add(new Bullet(bulletX, bulletY, bulletWidth, bulletHeight));
+
+        SoundManager.getInstance().playSound("shoot");
     }
 
     public void shoot() {

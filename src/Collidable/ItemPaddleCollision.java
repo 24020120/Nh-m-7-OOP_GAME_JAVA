@@ -1,5 +1,6 @@
 package Collidable;
 
+import Game.SoundManager;
 import GameBoard.GameBoard;
 import Item.Item;
 import GameObject.Ball;
@@ -24,6 +25,8 @@ public class ItemPaddleCollision extends Collidable {
 
                 it.applyEffect(board);
                 it.deactivate();
+
+                SoundManager.getInstance().playSound("item_collect");
             }
         }
     }

@@ -1,5 +1,6 @@
 package Collidable;
 
+import Game.SoundManager;
 import GameBoard.GameBoard;
 import GameObject.Ball;
 import Item.Shield;
@@ -33,6 +34,8 @@ public class BallBrickCollision extends Collidable {
                 brick.hit();
                 board.getScore().addScore(10, brickX, brickY);
                 board.incrementDestroyedBricks();
+
+                SoundManager.getInstance().playSound("brick_break");
 
                 // Xác suất rơi item
                 double chance = rand.nextDouble();

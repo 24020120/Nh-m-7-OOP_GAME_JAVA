@@ -4,6 +4,7 @@ import Game.Main;
 import GameBoard.GameBoard;
 import javax.swing.*;
 import java.awt.*;
+import Game.SoundManager;
 
 public class Menu extends JPanel {
     private Image backgroundImage;
@@ -15,6 +16,8 @@ public class Menu extends JPanel {
 
         backgroundImage = new ImageIcon("images/background.png").getImage();
         titleImage = new ImageIcon("images/arkanoid_title.png").getImage();
+
+        SoundManager.getInstance().playMusic("menu");
 
         add(Box.createVerticalGlue());
 
@@ -41,10 +44,10 @@ public class Menu extends JPanel {
 
         add(Box.createRigidArea(new Dimension(0, 30)));
 
-        continueButton = new IconButton(
-            "images/continue_basic.png",
-            "images/continue_hover.png",
-            "images/continue_pressed.png"
+        IconButton continueButton = new IconButton(
+                "images/continue_basic.png",      // ảnh bình thường
+                "images/continue_hover.png",      // ảnh khi hover
+                "images/continue_pressed.png"     // ảnh khi nhấn
         );
         continueButton.setPreferredSize(new Dimension(250, 50));
         continueButton.setMaximumSize(new Dimension(250, 50));
