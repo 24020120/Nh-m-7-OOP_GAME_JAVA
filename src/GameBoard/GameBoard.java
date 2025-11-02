@@ -46,7 +46,7 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     private int destroyedBricksCount = 0;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
-    
+
 
     private Image heartImage;
 
@@ -491,14 +491,23 @@ public class GameBoard extends JPanel implements Runnable, KeyListener {
     public static boolean hasSavedGame() {
         return new java.io.File("savegame.dat").exists();
     }
-
     public void decreaseLife() {
-        if (!heartBreaking && lives > 0) {
-            heartBreaking = true;
-            breakingHeartIndex = lives - 1; // trái tim cuối cùng bị vỡ
-            heartBreakStartTime = System.currentTimeMillis();
+        lives--;
+
+        if (lives > 0) {
+            // Tạo lại bóng mới
+            int paddleX = player.getX();
+            int paddleY = player.getY();
+            int ballDiameter = 12;
+            int ballX = paddleX + (player.getWidth() - ballDiameter) / 2;
+            int ballY = paddleY - ballDiameter - 2;
+
+            balls.clear();
+            balls.add(new Ball(ballX, ballY, ballDiameter, 3, -3));
+        } else {
+            // Hết mạng -> Game Over
+            setGameOver(true);
         }
     }
-
 
 }
